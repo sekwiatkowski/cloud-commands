@@ -17,7 +17,7 @@ function computeResumeGetApis(token) {
 export function findApiIdByName(apiGatewayV2, apiName, token) {
     const [subcommand, options] = token ? computeResumeGetApis(token) : getApis
 
-    return executeCommand(apiGatewayV2(subcommand, options))
+    return executeCommand(apiGatewayV2(subcommand) (options))
         .then(JSON.parse)
         .then(({Items, NextToken}) => {
             const found = Items.find(item => item.Name === apiName)

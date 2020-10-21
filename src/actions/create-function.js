@@ -36,7 +36,7 @@ export function createFunction(lambda) {
 
             const options = computeCreateOptions(role, runtime, name, description, vpc, api)
 
-            const command = lambda('create-function', options)
+            const command = lambda('create-function') (options)
 
             console.log(command)
 

@@ -1,13 +1,13 @@
 import {
-    allPass,
+    allPass, chunk,
     contains,
     difference,
-    drop, isEmpty,
+    drop, entries, isEmpty,
     isNotEmpty,
     isOfLengthOne, joinWithCommaSpace,
-    joinWithSemicolon,
+    joinWithSemicolon, joinWithSpace,
     keys,
-    length, values
+    length, map, splitBySpace, values
 } from 'compose-functions'
 
 const containsWildcardOnly = allPass([ isOfLengthOne, contains('*') ])
@@ -74,4 +74,38 @@ export function parseApiFunctionNames(routes) {
     }
 
     return specifiedFunctionNames
+}
+
+export function parseApiRouteKeys(routes) {
+    const userInput = extractCliArguments()
+
+    const knownRouteKeys = keys(routes)
+
+    if (containsWildcardOnly(userInput)) {
+        return knownRouteKeys
+    }
+
+    if (length(userInput) % 2 === 1) {
+        console.error(`Please specify a space-separated list of route keys.`)
+        process.exit(1)
+    }
+
+    const bigrams = chunk(2) (userInput)
+
+    const specifiedRouteKeys = map(joinWithSpace) (bigrams)
+
+    const unknownRouteKeys = difference(specifiedRouteKeys)(knownRouteKeys)
+
+    if (isNotEmpty(unknownRouteKeys)) {
+        if (isOfLengthOne (unknownRouteKeys)) {
+            console.error(`The specified route keys ${unknownRouteKeys[0]} is not defined for the API.`)
+            process.exit(1)
+        }
+        else {
+            console.error(`The following specified route keys are unknown: ${joinWithCommaSpace(unknownRouteKeys)}`)
+            process.exit(length(unknownRouteKeys))
+        }
+    }
+
+    return specifiedRouteKeys
 }

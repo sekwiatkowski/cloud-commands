@@ -20,7 +20,7 @@ export function integrateFunction(apiGatewayV2, computeArn) {
 
         const [subcommand, options] = computeIntegrateFunctionParameters(apiId)(functionArn)
 
-        const command = apiGatewayV2(subcommand, options)
+        const command = apiGatewayV2(subcommand) (options)
 
         console.log(command)
 

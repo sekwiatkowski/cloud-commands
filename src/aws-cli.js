@@ -11,7 +11,7 @@ function generateOption(option) {
 }
 
 export function createAwsCli(profile, region) {
-    return service => (command, options) =>
+    return service => command => options =>
         [
             'aws',
             service,

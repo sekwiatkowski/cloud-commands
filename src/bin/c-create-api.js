@@ -17,5 +17,5 @@ import {createApi} from '../actions/create-api'
 
     const command = createApi(apiGatewayV2, api)
 
-    command()
+    await command()
 })()

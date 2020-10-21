@@ -1,13 +1,14 @@
 {
     "name": "cloud-commands",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "bin": {
         "c-create-function": "src/bin/c-create-function.js",
         "c-delete-distribution": "src/bin/c-delete-distribution.js",
         "c-build-function": "src/bin/c-build-function.js",
         "c-zip-function": "src/bin/c-zip-function.js",
         "c-create-api": "src/bin/c-create-api.js",
-        "c-integrate-function": "src/bin/c-integrate-function.js"
+        "c-integrate-function": "src/bin/c-integrate-function.js",
+        "c-grant-invoke-permission": "src/bin/c-grant-invoke-permission.js"
     },
     "dependencies": {
         "compose-functions": "github:sekwiatkowski/compose-functions#v0.15.5",

@@ -23,9 +23,10 @@ import {performSequentially} from '../perform-sequentially'
 
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
-    const computeAccountArn = computeArn(region)(accountId)
 
     const apiId = await findApiIdByName(apiGatewayV2, name)
+
+    const computeAccountArn = computeArn(region)(accountId)
 
     const integrateWithApi = integrateFunction(apiGatewayV2, computeAccountArn)(name, apiId)
 

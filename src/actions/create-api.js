@@ -48,7 +48,7 @@ export function createApi(apiGatewayV2, {name, description, enableCors, routes})
 
         const options = computeCreateApiOptions(name, description, enableCors, routes)
 
-        const command = apiGatewayV2('create-api', options)
+        const command = apiGatewayV2('create-api') (options)
 
         console.log(command)
 
