@@ -12,6 +12,10 @@ function handleOutput({stdout, stderr}) {
     }
 }
 
+export function executeCommand(command) {
+    return exec(command).then(handleOutput)
+}
+
 export function executeInDirectory(command, cwd) {
-    return exec(command, { cwd  }).then(handleOutput)
+    return exec(command, { cwd }).then(handleOutput)
 }

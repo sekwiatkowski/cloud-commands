@@ -5,5 +5,4 @@ export function performSequentially(actions) {
         ((p, action) => p.then(() => action()))
         (Promise.resolve())
         (actions)
-
 }
