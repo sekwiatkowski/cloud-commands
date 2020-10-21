@@ -5,7 +5,7 @@ import {performSequentially} from '../perform-sequentially'
 import {parseConfigurationFile} from '../configuration'
 import buildFunction from '../actions/build-function'
 import deleteDistribution from '../actions/delete-distribution'
-import parseFunctionNames from '../cli-arguments'
+import {parseFunctionNames} from '../cli-arguments'
 
 (async () => {
     const { functions, esbuild } = await parseConfigurationFile('aws.json')

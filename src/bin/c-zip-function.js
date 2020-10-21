@@ -5,7 +5,7 @@ import {performSequentially} from '../perform-sequentially'
 import zipFunction from '../actions/zip-function'
 import deleteDistribution from '../actions/delete-distribution'
 import buildFunction from '../actions/build-function'
-import parseFunctionNames from '../cli-arguments'
+import {parseFunctionNames} from '../cli-arguments'
 
 
 (async () => {

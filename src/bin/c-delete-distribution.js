@@ -3,8 +3,8 @@
 import {performSequentially} from '../perform-sequentially'
 import {map} from 'compose-functions'
 import deleteDistribution from '../actions/delete-distribution'
-import parseFunctionNames from '../cli-arguments'
 import {parseConfigurationFile} from '../configuration'
+import {parseFunctionNames} from '../cli-arguments'
 
 (async () => {
     const { functions } = await parseConfigurationFile('aws.json')
