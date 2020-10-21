@@ -15,7 +15,5 @@ import {createApi} from '../actions/create-api'
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
-    const command = createApi(apiGatewayV2, api)
-
-    await command()
+    await createApi(apiGatewayV2, api)
 })()

@@ -7,7 +7,7 @@ import {
     isOfLengthOne, joinWithCommaSpace,
     joinWithSemicolon, joinWithSpace,
     keys,
-    length, map, splitBySpace, values
+    length, map, pick, splitBySpace, values
 } from 'compose-functions'
 
 const containsWildcardOnly = allPass([ isOfLengthOne, contains('*') ])
@@ -34,7 +34,7 @@ export function parseFunctionNames(functions) {
 
     if (isNotEmpty(unknownFunctionNames)) {
         if (isOfLengthOne (unknownFunctionNames)) {
-            console.error(`The specified function ${unknownFunctionNames[0]} is unknown.`)
+            console.error(`Specified function "${unknownFunctionNames[0]}" is unknown.`)
             process.exit(1)
         }
         else {
@@ -64,7 +64,7 @@ export function parseApiFunctionNames(routes) {
 
     if (isNotEmpty(unknownFunctionNames)) {
         if (isOfLengthOne (unknownFunctionNames)) {
-            console.error(`The specified function ${unknownFunctionNames[0]} is not used by the API.`)
+            console.error(`Specified function "${unknownFunctionNames[0]}" is not used by the API.`)
             process.exit(1)
         }
         else {
@@ -76,13 +76,13 @@ export function parseApiFunctionNames(routes) {
     return specifiedFunctionNames
 }
 
-export function parseApiRouteKeys(routes) {
+export function parseApiRoutes(routes) {
     const userInput = extractCliArguments()
 
     const knownRouteKeys = keys(routes)
 
     if (containsWildcardOnly(userInput)) {
-        return knownRouteKeys
+        return routes
     }
 
     if (length(userInput) % 2 === 1) {
@@ -98,7 +98,7 @@ export function parseApiRouteKeys(routes) {
 
     if (isNotEmpty(unknownRouteKeys)) {
         if (isOfLengthOne (unknownRouteKeys)) {
-            console.error(`The specified route keys ${unknownRouteKeys[0]} is not defined for the API.`)
+            console.error(`Specified route key "${unknownRouteKeys[0]}" is unknown.`)
             process.exit(1)
         }
         else {
@@ -107,5 +107,33 @@ export function parseApiRouteKeys(routes) {
         }
     }
 
-    return specifiedRouteKeys
+    return pick(specifiedRouteKeys)(routes)
+}
+
+export function parseApiStages(knownStages) {
+    const specifiedStages = extractCliArguments()
+
+    if (isEmpty(specifiedStages)) {
+        console.error(`Please specify at least one API stage.`)
+        process.exit(1)
+    }
+
+    if (containsWildcardOnly(specifiedStages)) {
+        return knownStages
+    }
+
+    const unknownStages = difference(specifiedStages)(knownStages)
+
+    if (isNotEmpty(unknownStages)) {
+        if (isOfLengthOne (unknownStages)) {
+            console.error(`Specified stage "${unknownStages[0]}" is unknown.`)
+            process.exit(1)
+        }
+        else {
+            console.error(`The following specified stages are unknown: ${joinWithCommaSpace(unknownStages)}`)
+            process.exit(length(unknownStages))
+        }
+    }
+
+    return unknownStages
 }

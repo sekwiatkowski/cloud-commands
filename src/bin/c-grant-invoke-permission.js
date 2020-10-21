@@ -1,6 +1,6 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {parseApiRouteKeys} from '../cli-arguments'
+import {parseApiRoutes} from '../cli-arguments'
 import {parseConfigurationFile} from '../configuration'
 import {findApiIdByName} from '../additional-information/api-id'
 import {createAwsCli} from '../aws-cli'
@@ -19,9 +19,7 @@ import {performSequentially} from '../perform-sequentially'
 
     const { name, routes, stages } = api
 
-    const specifiedRouteKeys = parseApiRouteKeys(routes)
-
-    const specifiedRoutes = entries(pick(specifiedRouteKeys)(routes))
+    const specifiedRoutes = entries(parseApiRoutes(routes))
 
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
