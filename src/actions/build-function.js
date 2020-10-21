@@ -1,5 +1,5 @@
-import path from "path"
-import {executeInCurrentWorkingDirectory} from '../execution'
+import path from 'path'
+import {executeInDirectory} from '../execution'
 import {concat, joinWithSpace, map} from 'compose-functions'
 
 function computeExternalOptions(externalConfiguration) {
@@ -11,7 +11,7 @@ function computeExternalOptions(externalConfiguration) {
         ? map(external => `--external:${external}`) (externalConfiguration)
         : []
 
-    return concat(baseOptions) (additionalOptions)
+    return concat([ baseOptions, additionalOptions ])
 }
 
 function computeEsBuildOptions({ external }) {
@@ -25,7 +25,7 @@ function computeEsBuildOptions({ external }) {
 
         const externalOptions = computeExternalOptions(external)
 
-        const options = joinWithSpace(baseOptions.concat(externalOptions))
+        const options = joinWithSpace(concat([ baseOptions, externalOptions ]))
 
         return options
     }
@@ -42,6 +42,10 @@ export default function buildFunction(esbuildConfiguration) {
 
         const command = `esbuild ${options}`
 
-        return executeInCurrentWorkingDirectory(command)
+        const directory = process.cwd()
+
+        console.log(`[${directory}] ${command}`)
+
+        return executeInDirectory(command, directory)
     }
 }

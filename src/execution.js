@@ -12,10 +12,6 @@ function handleOutput({stdout, stderr}) {
     }
 }
 
-export function executeInCurrentWorkingDirectory(command) {
-    return exec(command, { cwd: process.cwd() }).then(handleOutput)
-}
-
 export function executeInDirectory(command, cwd) {
     return exec(command, { cwd  }).then(handleOutput)
 }
