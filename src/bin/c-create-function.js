@@ -8,16 +8,16 @@ import {createAwsCli} from '../aws-cli'
 import deleteDistribution from '../actions/delete-distribution'
 import buildFunction from '../actions/build-function'
 import zipFunction from '../actions/zip-function'
-import {parseFunctionNames} from '../cli-arguments'
+import {parseFunctionNames, parseFunctions} from '../cli-arguments'
 
 (async () => {
     const { profile, region, functions, esbuild, runtime, role, vpc, api } = await parseConfigurationFile('aws.json')
-    const functionNames = parseFunctionNames(functions)
+    const specifiedFunctions = parseFunctions(functions)
 
     const awsCli = createAwsCli(profile, region)
     const lambdaCli = awsCli('lambda')
 
-    const namesAndConfigurations = entries(pick(functionNames)(functions))
+    const namesAndConfigurations = entries(specifiedFunctions)
 
     const boundCreateFunction = createFunction(lambdaCli)(role, runtime, vpc, api)
 

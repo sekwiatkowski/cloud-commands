@@ -46,6 +46,12 @@ export function parseFunctionNames(functions) {
     return specifiedFunctionNames
 }
 
+export function parseFunctions(functions) {
+    const specifiedFunctionNames = parseFunctionNames(functions)
+
+    return pick(specifiedFunctionNames)(functions)
+}
+
 export function parseApiFunctionNames(routes) {
     const specifiedFunctionNames = extractCliArguments()
 
