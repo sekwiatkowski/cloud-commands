@@ -8,7 +8,7 @@ import {parseFunctions} from '../cli-arguments'
 import {configureFunction} from '../actions/configure-function'
 
 (async () => {
-    const { profile, region, functions, runtime, role, vpc, api } = await parseConfigurationFile('aws.json')
+    const { profile, region, functions, runtime, role, vpc } = await parseConfigurationFile('aws.json')
     const specifiedFunctions = parseFunctions(functions)
 
     const awsCli = createAwsCli(profile, region)
