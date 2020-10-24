@@ -1,4 +1,6 @@
 import {executeCommand} from '../execution'
+import {flatMap, mapEntries, splitBySpace} from 'compose-functions'
+import {performSequentially} from '../perform-sequentially'
 
 function generateRandomInteger(low, high) {
     return parseInt(Math.random() * (high - low) + low)
@@ -19,10 +21,10 @@ export function computeGrantInvokePermissionOptions(functionArn, sourceArn) {
 }
 
 export function grantInvokePermission(computeAccountArn, lambda) {
-    return (apiName, apiId) => {
+    return apiId => {
         return stage => {
             return ([verb, path], functionName) => {
-                console.log(`Granting invoke permission for function "${functionName}" to route "${verb} ${path}" of the "${stage}" stage of the "${apiName}" API ...`)
+                console.log(`Granting invoke permission for function "${functionName}" to route "${verb} ${path}" of the "${stage}" stage ...`)
 
                 // arn:aws:lambda:[region]:[account ID]:function:[function name]
                 const functionArn = computeAccountArn('lambda')('function' + ':' + functionName)
@@ -38,4 +40,21 @@ export function grantInvokePermission(computeAccountArn, lambda) {
             }
         }
     }
+}
+
+export async function grantInvokePermissions(apiGatewayV2, lambda, computeAccountArn, id, stages, routes) {
+    const grantToAccount = grantInvokePermission(computeAccountArn, lambda)
+    const grantToApi = grantToAccount(id)
+
+    const actions = flatMap(stage => {
+        const grantToStage = grantToApi(stage)
+
+        return mapEntries
+            (([routeKey, functionName]) => () =>
+                grantToStage(splitBySpace(routeKey), functionName)
+            )
+            (routes)
+    }) (stages)
+
+    return performSequentially(actions)
 }

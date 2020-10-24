@@ -3,12 +3,12 @@
 import {parseConfigurationFile} from '../configuration'
 import {performSequentially} from '../perform-sequentially'
 import {createFunction} from '../actions/create-function'
-import {entries, map, pick, property} from 'compose-functions'
+import {entries, map} from 'compose-functions'
 import {createAwsCli} from '../aws-cli'
 import deleteDistribution from '../actions/delete-distribution'
 import buildFunction from '../actions/build-function'
 import zipFunction from '../actions/zip-function'
-import {parseFunctionNames, parseFunctions} from '../cli-arguments'
+import {parseFunctions} from '../cli-arguments'
 
 (async () => {
     const { profile, region, functions, esbuild, runtime, role, vpc, api } = await parseConfigurationFile('aws.json')
@@ -28,5 +28,5 @@ import {parseFunctionNames, parseFunctions} from '../cli-arguments'
             .then(() => boundCreateFunction(name, configuration))
     ) (namesAndConfigurations)
 
-    performSequentially(actions)
+    await performSequentially(actions)
 })()

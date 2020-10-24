@@ -1,4 +1,7 @@
 import {executeCommand} from '../execution'
+import {findApiIdByName} from '../additional-information/api-id'
+import {map} from 'compose-functions'
+import {performSequentially} from '../perform-sequentially'
 
 function computeIntegrateFunctionParameters(apiId) {
     return lambdaArn => [
@@ -13,8 +16,8 @@ function computeIntegrateFunctionParameters(apiId) {
 }
 
 export function integrateFunction(apiGatewayV2, computeArn) {
-    return (apiName, apiId) => functionName => {
-        console.log(`Integrating function "${functionName}" with API "${apiName}" ...`)
+    return apiId => functionName => {
+        console.log(`Integrating function "${functionName}" ...`)
 
         const functionArn = computeArn('lambda')('function' + ':' + functionName)
 
@@ -24,6 +27,14 @@ export function integrateFunction(apiGatewayV2, computeArn) {
 
         console.log(command)
 
-        return executeCommand(command)
+        return executeCommand(command).then(JSON.parse)
     }
+}
+
+export function integrateFunctions(apiGatewayV2, computeAccountArn, id, functionNames) {
+    const integrateWithApi = integrateFunction(apiGatewayV2, computeAccountArn)(id)
+
+    const actions = map(name => () => integrateWithApi(name))(functionNames)
+
+    return performSequentially(actions)
 }

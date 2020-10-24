@@ -2,12 +2,10 @@
 
 import {parseConfigurationFile} from '../configuration'
 import {createAwsCli} from '../aws-cli'
-import {findApiIdByName} from '../additional-information/api-id'
 import {parseApiFunctionNames} from '../cli-arguments'
-import {integrateFunction} from '../actions/integrate-function'
+import {integrateFunctions} from '../actions/integrate-function'
 import computeArn from '../arns'
-import {map} from 'compose-functions'
-import {performSequentially} from '../perform-sequentially'
+import {findApiIdByName} from '../additional-information/api-id'
 
 (async () => {
     const { api, profile, region, accountId } = await parseConfigurationFile('aws.json')
@@ -24,13 +22,9 @@ import {performSequentially} from '../perform-sequentially'
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
-    const apiId = await findApiIdByName(apiGatewayV2, name)
-
     const computeAccountArn = computeArn(region)(accountId)
 
-    const integrateWithApi = integrateFunction(apiGatewayV2, computeAccountArn)(name, apiId)
+    const id = await findApiIdByName(apiGatewayV2, name)
 
-    const actions = map(name => () => integrateWithApi(name))(functionNames)
-
-    performSequentially(actions)
+    await integrateFunctions(apiGatewayV2, computeAccountArn, id, functionNames)
 })()

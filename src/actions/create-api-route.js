@@ -1,5 +1,6 @@
-import {concat} from 'compose-functions'
+import {concat, entries, map} from 'compose-functions'
 import {executeCommand} from '../execution'
+import {performSequentially} from '../perform-sequentially'
 
 function computeCreateRouteOptions(apiId) {
     return routeKey => integrationId => maybeAuthorizerId => {
@@ -32,4 +33,12 @@ export function createApiRoute(apiGatewayV2, apiId) {
 
         return executeCommand(command)
     }
+}
+
+export async function createApiRoutes(apiGatewayV2, id, routeKeysAndIntegrationIds) {
+    const actions = map(([routeKey, integrationId]) =>
+        () => createApiRoute(apiGatewayV2, id) (routeKey, integrationId)
+    ) (entries(routeKeysAndIntegrationIds))
+
+    return performSequentially(actions)
 }

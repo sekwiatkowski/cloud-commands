@@ -51,5 +51,5 @@ export function createApi(apiGatewayV2, {name, description, enableCors, routes})
 
     console.log(command)
 
-    return executeCommand(command)
+    return executeCommand(command).then(JSON.parse)
 }

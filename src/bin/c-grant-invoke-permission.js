@@ -2,12 +2,11 @@
 
 import {parseApiRoutes} from '../cli-arguments'
 import {parseConfigurationFile} from '../configuration'
-import {findApiIdByName} from '../additional-information/api-id'
 import {createAwsCli} from '../aws-cli'
 import computeArn from '../arns'
-import {grantInvokePermission} from '../actions/grant-invoke-permission'
-import {entries, flatMap, map, pick, splitBySpace} from 'compose-functions'
-import {performSequentially} from '../perform-sequentially'
+import {entries} from 'compose-functions'
+import {grantInvokePermissions} from '../actions/grant-invoke-permission'
+import {findApiIdByName} from '../additional-information/api-id'
 
 (async () => {
     const { profile, region, api, accountId } = await parseConfigurationFile('aws.json')
@@ -17,30 +16,17 @@ import {performSequentially} from '../perform-sequentially'
         process.exit(1)
     }
 
-    const { name, routes, stages } = api
+    const { name, stages, routes } = api
 
     const specifiedRoutes = entries(parseApiRoutes(routes))
 
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
+    const lambda = awsCli('lambda')
+
+    const computeAccountArn = computeArn(region) (accountId)
 
     const id = await findApiIdByName(apiGatewayV2, name)
 
-    const computeAccountArn = computeArn(region) (accountId)
-    const lambda = awsCli('lambda')
-
-    const grantToAccount = grantInvokePermission(computeAccountArn, lambda)
-    const grantToApi = grantToAccount(name, id)
-
-    const actions = flatMap(stage => {
-        const grantToStage = grantToApi(stage)
-
-        return map
-            (([routeKey, functionName]) => () =>
-                grantToStage(splitBySpace(routeKey), functionName)
-            )
-            (specifiedRoutes)
-    })(stages)
-
-    performSequentially(actions)
+    await grantInvokePermissions(apiGatewayV2, lambda, computeAccountArn, id, stages, specifiedRoutes)
 })()

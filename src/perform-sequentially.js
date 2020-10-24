@@ -1,8 +1,11 @@
 import {fold} from 'compose-functions'
 
-export function performSequentially(actions) {
-    return fold
-        ((p, action) => p.then(() => action()))
-        (Promise.resolve())
+export async function performSequentially(actions) {
+    return fold(
+            (accP, action) => Promise
+                .all([accP, action()])
+                .then(([acc, result]) => acc.concat(result))
+        )
+        (Promise.resolve([]))
         (actions)
 }
