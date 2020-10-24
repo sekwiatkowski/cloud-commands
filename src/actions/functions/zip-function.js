@@ -1,5 +1,5 @@
 import path from "path"
-import {executeInDirectory} from '../execution'
+import {executeInDirectory} from '../../execution'
 
 export default function zipFunction(name) {
     console.log(`Creating ${name}.zip ...`)

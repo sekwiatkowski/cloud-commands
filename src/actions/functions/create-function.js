@@ -1,6 +1,6 @@
 import {concat} from 'compose-functions'
-import {computeVpcConfig} from '../vpc-config'
-import {executeInDirectory} from '../execution'
+import {computeVpcConfig} from '../../vpc-config'
+import {executeInDirectory} from '../../execution'
 
 function computeTags(apiName) {
     return `"API=${apiName}"`

@@ -1,12 +1,12 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {parseConfigurationFile} from '../configuration'
-import {findApiIdByName} from '../additional-information/api-id'
-import {createAwsCli} from '../aws-cli'
-import {parseApiRoutes} from '../cli-arguments'
-import {createApiRoutes} from '../actions/create-api-route'
+import {parseConfigurationFile} from '../../configuration'
+import {findApiIdByName} from '../../additional-information/api-id'
+import {createAwsCli} from '../../aws-cli'
+import {parseApiRoutes} from '../../cli-arguments'
+import {createApiRoutes} from '../../actions/apis/create-api-route'
 import {mapValues, propertyOf, unique, values} from 'compose-functions'
-import {findIntegrationIdsByNames} from '../additional-information/integration-id'
+import {findIntegrationIdsByNames} from '../../additional-information/integration-id'
 
 (async () => {
     const { api, profile, region } = await parseConfigurationFile('aws.json')

@@ -1,11 +1,11 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {parseConfigurationFile} from '../configuration'
-import {createAwsCli} from '../aws-cli'
-import {parseApiFunctionNames} from '../cli-arguments'
-import {integrateFunctions} from '../actions/integrate-function'
-import computeArn from '../arns'
-import {findApiIdByName} from '../additional-information/api-id'
+import {parseConfigurationFile} from '../../configuration'
+import {createAwsCli} from '../../aws-cli'
+import {parseApiFunctionNames} from '../../cli-arguments'
+import {integrateFunctions} from '../../actions/apis/integrate-function'
+import computeArn from '../../arns'
+import {findApiIdByName} from '../../additional-information/api-id'
 
 (async () => {
     const { api, profile, region, accountId } = await parseConfigurationFile('aws.json')

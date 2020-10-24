@@ -1,4 +1,4 @@
-import {executeCommand} from '../execution'
+import {executeCommand} from '../../execution'
 
 function computeDeleteApiOptions(apiId) {
     return [

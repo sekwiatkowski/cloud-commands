@@ -1,6 +1,6 @@
-import {executeCommand} from '../execution'
+import {executeCommand} from '../../execution'
 import {flatMap, mapEntries, splitBySpace} from 'compose-functions'
-import {performSequentially} from '../perform-sequentially'
+import {performSequentially} from '../../perform-sequentially'
 
 function generateRandomInteger(low, high) {
     return parseInt(Math.random() * (high - low) + low)

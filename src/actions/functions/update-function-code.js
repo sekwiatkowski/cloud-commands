@@ -1,5 +1,5 @@
-import {executeCommand} from '../execution'
-import {computeVpcConfig} from '../vpc-config'
+import {executeCommand} from '../../execution'
+import {computeVpcConfig} from '../../vpc-config'
 
 export function updateFunctionCode(lambda, role, runtime, vpc) {
     return (name, {description}) => {

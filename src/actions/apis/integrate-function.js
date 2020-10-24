@@ -1,7 +1,7 @@
-import {executeCommand} from '../execution'
-import {findApiIdByName} from '../additional-information/api-id'
+import {executeCommand} from '../../execution'
+import {findApiIdByName} from '../../additional-information/api-id'
 import {map} from 'compose-functions'
-import {performSequentially} from '../perform-sequentially'
+import {performSequentially} from '../../perform-sequentially'
 
 function computeIntegrateFunctionParameters(apiId) {
     return lambdaArn => [

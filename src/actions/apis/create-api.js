@@ -8,7 +8,7 @@ import {
     surroundWithDoubleQuotes,
     unique
 } from 'compose-functions'
-import {executeCommand} from '../execution'
+import {executeCommand} from '../../execution'
 
 function computeBaseOptions(name, description) {
     return [

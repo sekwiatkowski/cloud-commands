@@ -1,5 +1,5 @@
-import {executeCommand} from '../execution'
-import {performSequentially} from '../perform-sequentially'
+import {executeCommand} from '../../execution'
+import {performSequentially} from '../../perform-sequentially'
 import {map} from 'compose-functions'
 
 function computeCreateStageOptions(apiId) {

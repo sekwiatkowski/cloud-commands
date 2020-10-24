@@ -1,14 +1,14 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {parseConfigurationFile} from '../configuration'
-import {performSequentially} from '../perform-sequentially'
-import {createFunction} from '../actions/create-function'
+import {parseConfigurationFile} from '../../configuration'
+import {performSequentially} from '../../perform-sequentially'
+import {createFunction} from '../../actions/functions/create-function'
 import {entries, map} from 'compose-functions'
-import {createAwsCli} from '../aws-cli'
-import deleteDistribution from '../actions/delete-distribution'
-import buildFunction from '../actions/build-function'
-import zipFunction from '../actions/zip-function'
-import {parseFunctions} from '../cli-arguments'
+import {createAwsCli} from '../../aws-cli'
+import deleteDistribution from '../../actions/functions/delete-distribution'
+import buildFunction from '../../actions/functions/build-function'
+import zipFunction from '../../actions/functions/zip-function'
+import {parseFunctions} from '../../cli-arguments'
 
 (async () => {
     const { profile, region, functions, esbuild, runtime, role, vpc, api } = await parseConfigurationFile('aws.json')

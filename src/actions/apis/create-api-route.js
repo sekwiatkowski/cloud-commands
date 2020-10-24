@@ -1,6 +1,6 @@
 import {concat, entries, map} from 'compose-functions'
-import {executeCommand} from '../execution'
-import {performSequentially} from '../perform-sequentially'
+import {executeCommand} from '../../execution'
+import {performSequentially} from '../../perform-sequentially'
 
 function computeCreateRouteOptions(apiId) {
     return routeKey => integrationId => maybeAuthorizerId => {

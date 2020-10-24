@@ -1,10 +1,10 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {parseConfigurationFile} from '../configuration'
-import {findApiIdByName} from '../additional-information/api-id'
-import {createAwsCli} from '../aws-cli'
-import {createApiStages} from '../actions/create-api-stage'
-import {parseApiStages} from '../cli-arguments'
+import {parseConfigurationFile} from '../../configuration'
+import {findApiIdByName} from '../../additional-information/api-id'
+import {createAwsCli} from '../../aws-cli'
+import {createApiStages} from '../../actions/apis/create-api-stage'
+import {parseApiStages} from '../../cli-arguments'
 
 (async () => {
     const { api, profile, region } = await parseConfigurationFile('aws.json')

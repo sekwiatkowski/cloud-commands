@@ -1,14 +1,14 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
 import {fromEntries, map, mapValues, property, propertyOf, unique, values, zip} from 'compose-functions'
-import {parseConfigurationFile} from '../configuration'
-import {createAwsCli} from '../aws-cli'
-import {createApi} from '../actions/create-api'
-import {createApiStages} from '../actions/create-api-stage'
-import {createApiRoutes} from '../actions/create-api-route'
-import {integrateFunctions} from '../actions/integrate-function'
-import computeArn from '../arns'
-import {grantInvokePermissions} from '../actions/grant-invoke-permission'
+import {parseConfigurationFile} from '../../configuration'
+import {createAwsCli} from '../../aws-cli'
+import {createApi} from '../../actions/apis/create-api'
+import {createApiStages} from '../../actions/apis/create-api-stage'
+import {createApiRoutes} from '../../actions/apis/create-api-route'
+import {integrateFunctions} from '../../actions/apis/integrate-function'
+import computeArn from '../../arns'
+import {grantInvokePermissions} from '../../actions/apis/grant-invoke-permission'
 
 (async () => {
     const { profile, accountId, region, api } = await parseConfigurationFile('aws.json')

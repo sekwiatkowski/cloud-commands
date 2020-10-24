@@ -1,11 +1,11 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {parseConfigurationFile} from '../configuration'
-import {performSequentially} from '../perform-sequentially'
+import {parseConfigurationFile} from '../../configuration'
+import {performSequentially} from '../../perform-sequentially'
 import {entries, map} from 'compose-functions'
-import {createAwsCli} from '../aws-cli'
-import {parseFunctions} from '../cli-arguments'
-import {updateFunctionCode} from '../actions/update-function-code'
+import {createAwsCli} from '../../aws-cli'
+import {parseFunctions} from '../../cli-arguments'
+import {updateFunctionCode} from '../../actions/functions/update-function-code'
 
 (async () => {
     const { profile, region, functions, runtime, role, vpc } = await parseConfigurationFile('aws.json')
