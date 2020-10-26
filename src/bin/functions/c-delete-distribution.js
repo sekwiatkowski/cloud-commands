@@ -12,5 +12,5 @@ import {parseFunctionNames} from '../../cli-arguments'
 
     const actions = map(name => () => deleteDistribution(name))(functionNames)
 
-    performSequentially(actions)
+    await performSequentially(actions)
 })()

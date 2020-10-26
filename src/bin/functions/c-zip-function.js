@@ -15,5 +15,5 @@ import {parseFunctionNames} from '../../cli-arguments'
         (name => () => deleteDistribution(name).then(() => buildFunction(esbuild)(name)).then(() => zipFunction(name)))
         (functionNames)
 
-    performSequentially(actions)
+    await performSequentially(actions)
 })()
