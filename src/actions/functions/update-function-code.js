@@ -1,20 +1,18 @@
-import {executeCommand} from '../../execution'
-import {computeVpcConfig} from '../../vpc-config'
+import {executeInDirectory} from '../../execution'
 
-export function updateFunctionCode(lambda, role, runtime, vpc) {
-    return (name, {description}) => {
+export function updateFunctionCode(lambda) {
+    return name => {
         const options = [
             ['function-name', name],
-            ['description', `"${description}"`],
-            ['role', role],
-            ['runtime', runtime],
-            ['vpc-config', computeVpcConfig(vpc)]
+            ['zip-file', `fileb://${name}.zip`]
         ]
 
-        const command = lambda('update-function-configuration')(options)
+        const command = lambda('update-function-code') (options)
 
         console.log(command)
 
-        return executeCommand(command)
+        const cwd = `dist\\${name}`
+
+        return executeInDirectory(command, cwd)
     }
 }

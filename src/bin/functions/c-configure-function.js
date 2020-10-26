@@ -5,7 +5,7 @@ import {performSequentially} from '../../perform-sequentially'
 import {entries, map} from 'compose-functions'
 import {createAwsCli} from '../../aws-cli'
 import {parseFunctions} from '../../cli-arguments'
-import {updateFunctionCode} from '../../actions/functions/update-function-code'
+import {updateFunctionConfiguration} from '../../actions/functions/update-function-code'
 
 (async () => {
     const { profile, region, functions, runtime, role, vpc } = await parseConfigurationFile('aws.json')
@@ -16,7 +16,7 @@ import {updateFunctionCode} from '../../actions/functions/update-function-code'
 
     const namesAndConfigurations = entries(specifiedFunctions)
 
-    const boundUpdateFunctionConfiguration = updateFunctionCode(lambdaCli, role, runtime, vpc)
+    const boundUpdateFunctionConfiguration = updateFunctionConfiguration(lambdaCli, role, runtime, vpc)
 
     const actions = map(([name, configuration]) => () => boundUpdateFunctionConfiguration(name, configuration)) (namesAndConfigurations)
 
