@@ -19,7 +19,7 @@ import {grantInvokePermissions} from '../../actions/apis/grant-invoke-permission
         process.exit(1)
     }
 
-    const { name, stages, routes } = api
+    const { stages, routes } = api
 
     // Create API
     const awsCli = createAwsCli(profile, region)

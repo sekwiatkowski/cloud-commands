@@ -7,21 +7,26 @@ import {parseApiRoutes} from '../../cli-arguments'
 import {createApiRoutes} from '../../actions/apis/create-api-route'
 import {mapValues, propertyOf, unique, values} from 'compose-functions'
 import {findIntegrationIdsByNames} from '../../additional-information/integration-id'
+import {grantInvokePermissions} from '../../actions/apis/grant-invoke-permission'
+import computeArn from '../../arns'
 
 (async () => {
-    const { api, profile, region } = await parseConfigurationFile('aws.json')
+    const { profile, accountId, region, api } = await parseConfigurationFile('aws.json')
 
     if (!api) {
         console.error('No API has been configured.')
         process.exit(1)
     }
 
-    const { name, routes } = api
+    const { name, routes, stages } = api
 
     const specifiedRoutes = parseApiRoutes(routes)
 
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
+    const lambda = awsCli('lambda')
+
+    const computeAccountArn = computeArn(region)(accountId)
 
     const id = await findApiIdByName(apiGatewayV2, name)
 
@@ -30,4 +35,6 @@ import {findIntegrationIdsByNames} from '../../additional-information/integratio
     const routeKeysAndIntegrationIds = mapValues(propertyOf(integrationIds))(specifiedRoutes)
 
     await createApiRoutes(apiGatewayV2, id, routeKeysAndIntegrationIds)
+
+    await grantInvokePermissions(apiGatewayV2, lambda, computeAccountArn, id, stages, specifiedRoutes)
 })()
