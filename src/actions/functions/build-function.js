@@ -19,6 +19,7 @@ function computeEsBuildOptions({ external }) {
         const baseOptions = [
             '--bundle',
             '--platform=node',
+            '--target=node12',
             sourcePath,
             `--outfile=${buildPath}`
         ]
