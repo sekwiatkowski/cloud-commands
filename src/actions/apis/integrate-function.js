@@ -1,6 +1,5 @@
 import {executeCommand} from '../../execution'
-import {findApiIdByName} from '../../additional-information/api-id'
-import {map} from 'compose-functions'
+import {map} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 
 function computeIntegrateFunctionParameters(apiId) {

@@ -1,4 +1,4 @@
-import {fold} from 'compose-functions'
+import {fold} from 'standard-functions'
 
 export async function performSequentially(actions) {
     return fold(

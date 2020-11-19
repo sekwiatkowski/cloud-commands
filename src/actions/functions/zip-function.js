@@ -1,4 +1,4 @@
-import path from "path"
+import path from 'path'
 import {executeInDirectory} from '../../execution'
 
 export default function zipFunction(name) {

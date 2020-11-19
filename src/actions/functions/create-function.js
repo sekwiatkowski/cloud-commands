@@ -1,4 +1,4 @@
-import {concat} from 'compose-functions'
+import {concat} from 'standard-functions'
 import {computeVpcConfig} from '../../vpc-config'
 import {executeInDirectory} from '../../execution'
 

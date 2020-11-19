@@ -2,7 +2,7 @@
 
 import {parseConfigurationFile} from '../../configuration'
 import {performSequentially} from '../../perform-sequentially'
-import {map} from 'compose-functions'
+import {map} from 'standard-functions'
 import {createAwsCli} from '../../aws-cli'
 import deleteDistribution from '../../actions/functions/delete-distribution'
 import buildFunction from '../../actions/functions/build-function'

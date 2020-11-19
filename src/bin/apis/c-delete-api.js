@@ -2,7 +2,6 @@
 
 import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
-import {createApi} from '../../actions/apis/create-api'
 import {findApiIdByName} from '../../additional-information/api-id'
 import {deleteApi} from '../../actions/apis/delete-api'
 

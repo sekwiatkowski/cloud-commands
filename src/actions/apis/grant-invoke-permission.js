@@ -1,5 +1,5 @@
 import {executeCommand} from '../../execution'
-import {flatMap, mapEntries, splitBySpace} from 'compose-functions'
+import {flatMap, mapEntries, splitBySpace} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 
 function generateRandomInteger(low, high) {

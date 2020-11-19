@@ -1,6 +1,6 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {map} from 'compose-functions'
+import {map} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import zipFunction from '../../actions/functions/zip-function'
 import deleteDistribution from '../../actions/functions/delete-distribution'

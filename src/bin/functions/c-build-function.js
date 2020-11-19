@@ -1,6 +1,6 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {map} from 'compose-functions'
+import {map} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import {parseConfigurationFile} from '../../configuration'
 import buildFunction from '../../actions/functions/build-function'

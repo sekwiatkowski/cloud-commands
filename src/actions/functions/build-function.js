@@ -1,6 +1,6 @@
 import path from 'path'
 import {executeInDirectory} from '../../execution'
-import {concat, joinWithSpace, map} from 'compose-functions'
+import {concat, joinWithSpace, map} from 'standard-functions'
 
 function computeExternalOptions(externalConfiguration) {
     const baseOptions = [

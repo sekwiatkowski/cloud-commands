@@ -2,10 +2,10 @@
 
 import {parseConfigurationFile} from '../../configuration'
 import {performSequentially} from '../../perform-sequentially'
-import {entries, map} from 'compose-functions'
+import {entries, map} from 'standard-functions'
 import {createAwsCli} from '../../aws-cli'
 import {parseFunctions} from '../../cli-arguments'
-import {updateFunctionConfiguration} from '../../actions/functions/update-function-code'
+import {updateFunctionConfiguration} from '../../actions/functions/update-function-configuration'
 
 (async () => {
     const { profile, region, functions, runtime, role, vpc } = await parseConfigurationFile('aws.json')

@@ -7,7 +7,7 @@ import {
     splitBySpace,
     surroundWithDoubleQuotes,
     unique
-} from 'compose-functions'
+} from 'standard-functions'
 import {executeCommand} from '../../execution'
 
 function computeBaseOptions(name, description) {

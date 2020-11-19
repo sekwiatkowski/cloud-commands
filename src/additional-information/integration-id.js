@@ -1,4 +1,4 @@
-import {last} from 'compose-functions'
+import {last} from 'standard-functions'
 import {executeCommand} from '../execution'
 
 function computeGetIntegrations(apiId) {

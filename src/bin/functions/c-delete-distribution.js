@@ -1,7 +1,7 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
 import {performSequentially} from '../../perform-sequentially'
-import {map} from 'compose-functions'
+import {map} from 'standard-functions'
 import deleteDistribution from '../../actions/functions/delete-distribution'
 import {parseConfigurationFile} from '../../configuration'
 import {parseFunctionNames} from '../../cli-arguments'

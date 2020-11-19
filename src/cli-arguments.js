@@ -1,14 +1,20 @@
 import {
-    allPass, chunk,
+    allPass,
+    chunk,
     contains,
     difference,
-    drop, entries, isEmpty,
+    drop,
+    isEmpty,
     isNotEmpty,
-    isOfLengthOne, joinWithCommaSpace,
-    joinWithSemicolon, joinWithSpace,
+    isOfLengthOne,
+    joinWithCommaSpace,
+    joinWithSpace,
     keys,
-    length, map, pick, splitBySpace, values
-} from 'compose-functions'
+    length,
+    map,
+    pick,
+    values
+} from 'standard-functions'
 
 const containsWildcardOnly = allPass([ isOfLengthOne, contains('*') ])
 

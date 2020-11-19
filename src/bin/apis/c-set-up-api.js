@@ -1,6 +1,6 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {fromEntries, map, mapValues, property, propertyOf, unique, values, zip} from 'compose-functions'
+import {fromEntries, map, mapValues, property, propertyOf, unique, values, zip} from 'standard-functions'
 import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {createApi} from '../../actions/apis/create-api'

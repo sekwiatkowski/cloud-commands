@@ -1,4 +1,4 @@
-import {joinWithComma, joinWithEqualitySign} from 'compose-functions'
+import {joinWithComma, joinWithEqualitySign} from 'standard-functions'
 
 function computeFragment(key) {
     return arr => {

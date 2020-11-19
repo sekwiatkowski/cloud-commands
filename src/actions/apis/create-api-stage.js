@@ -1,6 +1,6 @@
 import {executeCommand} from '../../execution'
 import {performSequentially} from '../../perform-sequentially'
-import {map} from 'compose-functions'
+import {map} from 'standard-functions'
 
 function computeCreateStageOptions(apiId) {
     return stage =>

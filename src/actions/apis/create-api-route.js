@@ -1,4 +1,4 @@
-import {concat, entries, map} from 'compose-functions'
+import {concat, entries, map} from 'standard-functions'
 import {executeCommand} from '../../execution'
 import {performSequentially} from '../../perform-sequentially'
 

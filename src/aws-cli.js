@@ -1,4 +1,4 @@
-import {isArray, map} from 'compose-functions'
+import {isArray, map} from 'standard-functions'
 
 function generateOption(option) {
     switch (isArray(option)) {
