@@ -1,6 +1,7 @@
 import {chainOption, concatOptions, mapOption, maybeUndefined, safeProperty} from 'data-structures'
 import {capitalize, joinWithComma, joinWithEqualitySign, joinWithSpace, map} from 'standard-functions'
 import {executeCommand} from '../../execution'
+import {computeLambdaFunctionArn} from '../../arns'
 
 function computeEquality(key) {
     return value => joinWithEqualitySign([key, value])
@@ -32,9 +33,9 @@ function computePasswordConfiguration({ minimumLength, requireUppercase, require
     return ['policies', `PasswordPolicy={${joinWithComma(presentSettings)}}`]
 }
 
-function computeLambdaConfiguration(computeArn) {
+function computeLambdaConfiguration(computeAccountArn) {
     return ({ preSignUp }) => {
-        return ['lambda-config', joinWithEqualitySign(['PreSignUp', computeArn(preSignUp)])]
+        return ['lambda-config', joinWithEqualitySign(['PreSignUp', computeLambdaFunctionArn(computeAccountArn) (preSignUp)])]
     }
 }
 
@@ -68,14 +69,14 @@ function computeUsernameAttributes(attributes) {
     return ['username-attributes', joinWithSpace(attributes) ]
 }
 
-export default function createUserPool(cognitoIdp, computeLambdaArn, { name, passwords, lambda, schema, username }) {
+export default function createUserPool(cognitoIdp, computeAccountArn, { name, passwords, lambda, schema, username }) {
     const nameConfiguration = computeNameConfiguration(name)
 
     const maybePasswords = maybeUndefined(passwords)
     const maybePasswordConfiguration = mapOption(computePasswordConfiguration) (maybePasswords)
 
     const maybeLambda = maybeUndefined(lambda)
-    const maybeLambdaConfiguration = mapOption(computeLambdaConfiguration(computeLambdaArn)) (maybeLambda)
+    const maybeLambdaConfiguration = mapOption(computeLambdaConfiguration(computeAccountArn)) (maybeLambda)
 
     const maybeSchema = maybeUndefined(schema)
     const maybeSchemaConfiguration = mapOption(computeSchema) (maybeSchema)

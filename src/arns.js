@@ -2,7 +2,7 @@
 // arn:partition:service:region:account-id:resource-id
 // arn:partition:service:region:account-id:resource-type/resource-id
 
-export default function computeArn(region) {
+export function computeArn(region) {
     return accountId => service => resource =>  [
         'arn',
         'aws',
@@ -11,4 +11,19 @@ export default function computeArn(region) {
         accountId,
         resource
     ].join(':')
+}
+
+export function computeLambdaFunctionArn(computeAccountArn) {
+    // arn:aws:lambda:[region]:[account ID]:function:[function name]
+    return functionName => computeAccountArn('lambda') ('function' + ':' + functionName)
+}
+
+export function computeExecuteApiArn(computeAccountArn) {
+    // arn:aws:execute-api:[region]:[account ID]:[api ID]/[stage name]/[verb]/[resource path]
+    return (apiId, stage, verb, path) => computeAccountArn('execute-api') (apiId + '/' + stage + '/' + verb + path)
+}
+
+//  arn:aws:cognito-idp:[region]:[account ID]:userpool/[pool id]
+export function computeUserPoolArn(computeAccountArn) {
+    return poolId => computeAccountArn('cognito-idp') ('userpool' + '/' + poolId)
 }

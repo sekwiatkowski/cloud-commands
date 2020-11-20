@@ -1,6 +1,7 @@
 import {executeCommand} from '../../execution'
 import {map} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
+import {computeLambdaFunctionArn} from '../../arns'
 
 function computeIntegrateFunctionParameters(apiId) {
     return lambdaArn => [
@@ -18,7 +19,7 @@ export function integrateFunction(apiGatewayV2, computeArn) {
     return apiId => functionName => {
         console.log(`Integrating function "${functionName}" ...`)
 
-        const functionArn = computeArn('lambda')('function' + ':' + functionName)
+        const functionArn = computeLambdaFunctionArn(computeArn) (functionName)
 
         const [subcommand, options] = computeIntegrateFunctionParameters(apiId)(functionArn)
 

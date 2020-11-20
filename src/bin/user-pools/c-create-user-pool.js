@@ -2,8 +2,10 @@
 
 import {parseConfigurationFile} from '../../configuration'
 import createUserPool from '../../actions/user-pools/create-user-pool'
-import computeArn from '../../arns'
 import {createAwsCli} from '../../aws-cli'
+import {computeArn} from '../../arns'
+import grantInvokePermissionToUserPoolFunctions from '../../actions/user-pools/grant-invoke-permission-to-user-pool'
+import {unique, values} from 'standard-functions'
 
 (async () => {
     const { accountId, profile, region, userPool } = await parseConfigurationFile('aws.json')
@@ -15,8 +17,14 @@ import {createAwsCli} from '../../aws-cli'
 
     const awsCli = createAwsCli(profile, region)
     const cognitoIdp = awsCli('cognito-idp')
+    const lambda = awsCli('lambda')
 
-    const computeAccountArn = computeArn(region) (accountId) ('lambda')
+    const computeAccountArn = computeArn(region) (accountId)
 
-    await createUserPool(cognitoIdp, computeAccountArn, userPool)
+    const { UserPool } = await createUserPool(cognitoIdp, computeAccountArn, userPool)
+    const userPoolId = UserPool.Id
+
+    const lambdaFunctions = unique(values(userPool.lambda))
+
+    await grantInvokePermissionToUserPoolFunctions(lambda, computeAccountArn, userPoolId, lambdaFunctions)
 })()

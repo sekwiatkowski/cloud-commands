@@ -7,8 +7,8 @@ import {parseApiRoutes} from '../../cli-arguments'
 import {createApiRoutes} from '../../actions/apis/create-api-route'
 import {mapValues, propertyOf, unique, values} from 'standard-functions'
 import {findIntegrationIdsByNames} from '../../additional-information/integration-id'
-import {grantInvokePermissions} from '../../actions/apis/grant-invoke-permission'
-import computeArn from '../../arns'
+import grantInvokePermissionToRoutes from '../../actions/apis/grant-invoke-permission-to-routes'
+import {computeArn} from '../../arns'
 
 (async () => {
     const { profile, accountId, region, api } = await parseConfigurationFile('aws.json')
@@ -28,13 +28,13 @@ import computeArn from '../../arns'
 
     const computeAccountArn = computeArn(region)(accountId)
 
-    const id = await findApiIdByName(apiGatewayV2, name)
+    const apiId = await findApiIdByName(apiGatewayV2, name)
 
     const usedFunctions = unique(values(specifiedRoutes))
-    const integrationIds = await findIntegrationIdsByNames(apiGatewayV2, id, usedFunctions)
+    const integrationIds = await findIntegrationIdsByNames(apiGatewayV2, apiId, usedFunctions)
     const routeKeysAndIntegrationIds = mapValues(propertyOf(integrationIds))(specifiedRoutes)
 
-    await createApiRoutes(apiGatewayV2, id, routeKeysAndIntegrationIds)
+    await createApiRoutes(apiGatewayV2, apiId, routeKeysAndIntegrationIds)
 
-    await grantInvokePermissions(apiGatewayV2, lambda, computeAccountArn, id, stages, specifiedRoutes)
+    await grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, stages, specifiedRoutes)
 })()

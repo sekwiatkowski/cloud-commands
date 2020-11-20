@@ -8,7 +8,7 @@ import {createApiStages} from '../../actions/apis/create-api-stage'
 import {createApiRoutes} from '../../actions/apis/create-api-route'
 import {integrateFunctions} from '../../actions/apis/integrate-function'
 import computeArn from '../../arns'
-import {grantInvokePermissions} from '../../actions/apis/grant-invoke-permission'
+import {grantInvokePermissionToRoutes} from '../../actions/apis/grant-invoke-permission-to-routes'
 
 (async () => {
     const { profile, accountId, region, api } = await parseConfigurationFile('aws.json')
@@ -43,5 +43,5 @@ import {grantInvokePermissions} from '../../actions/apis/grant-invoke-permission
 
     await createApiRoutes(apiGatewayV2, id, routeKeysAndIntegrationIds)
 
-    await grantInvokePermissions(apiGatewayV2, lambda, computeAccountArn, id, stages, routes)
+    await grantInvokePermissionToRoutes(apiGatewayV2, lambda, computeAccountArn, id, stages, routes)
 })()
