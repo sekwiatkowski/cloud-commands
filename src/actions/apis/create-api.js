@@ -18,7 +18,11 @@ function computeBaseOptions(name, description) {
     ]
 }
 
-function computeCorsOptions(enableCors, routes) {
+function computeCorsOptions(allowedHeaders, routes) {
+    if (!allowedHeaders) {
+        return []
+    }
+
     const routeKeys = keys(routes)
 
     const splits = map(splitBySpace)(routeKeys)
@@ -28,24 +32,24 @@ function computeCorsOptions(enableCors, routes) {
     const uniqueMethods = unique(methods)
 
     return [
-        ['cors-configuration', `AllowOrigins=*,AllowMethods=${joinWithComma(uniqueMethods)}` ]
+        ['cors-configuration', `AllowOrigins=*,AllowMethods=${joinWithComma(uniqueMethods)},AllowHeaders=${joinWithComma(allowedHeaders)}` ]
     ]
 }
 
-function computeCreateApiOptions(name, description, enableCors, routes) {
+function computeCreateApiOptions(name, description, cors, routes) {
     const baseOptions = computeBaseOptions(name, description)
 
-    const corsOptions = enableCors ? computeCorsOptions(enableCors, routes) : []
+    const corsOptions = computeCorsOptions(cors, routes)
 
     const options = concat([baseOptions, corsOptions])
 
     return options
 }
 
-export function createApi(apiGatewayV2, {name, description, enableCors, routes}) {
+export function createApi(apiGatewayV2, {name, description, cors, routes}) {
     console.log(`Creating API ${name} ...`)
 
-    const options = computeCreateApiOptions(name, description, enableCors, routes)
+    const options = computeCreateApiOptions(name, description, cors, routes)
 
     const command = apiGatewayV2('create-api') (options)
 

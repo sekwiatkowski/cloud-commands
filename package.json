@@ -1,6 +1,6 @@
 {
     "name": "cloud-commands",
-    "version": "0.3.6",
+    "version": "0.3.7",
     "bin": {
         "c-create-function": "src/bin/functions/c-create-function.js",
         "c-delete-distribution": "src/bin/functions/c-delete-distribution.js",
@@ -20,7 +20,7 @@
     "dependencies": {
         "data-structures": "github:sekwiatkowski/data-structures#v0.1.2",
         "fs-extra": "9.0.1",
-        "standard-functions": "github:sekwiatkowski/standard-functions#v0.20.1"
+        "standard-functions": "github:sekwiatkowski/standard-functions#v0.20.3"
     },
     "type": "module"
 }
