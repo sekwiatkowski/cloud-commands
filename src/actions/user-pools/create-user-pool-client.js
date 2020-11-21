@@ -4,7 +4,7 @@ import {concat, joinWithComma, joinWithEqualitySign, joinWithSpace, map, pairWit
 import {executeCommand} from '../../execution'
 
 function computeFlowConfiguration() {
-    const list = [ 'ALLOW_USER_SRP_AUTH' , 'ALLOW_REFRESH_TOKEN_AUTH' ]
+    const list = [ 'ALLOW_USER_PASSWORD_AUTH' , 'ALLOW_REFRESH_TOKEN_AUTH' ]
 
     return ['explicit-auth-flows', joinWithSpace(list) ]
 }
