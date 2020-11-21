@@ -7,12 +7,11 @@ import {createApi} from '../../actions/apis/create-api'
 import {createApiStages} from '../../actions/apis/create-api-stage'
 import {createApiRoutes} from '../../actions/apis/create-api-route'
 import {integrateFunctions} from '../../actions/apis/integrate-function'
-import computeArn from '../../arns'
-import {grantInvokePermissionToRoutes} from '../../actions/apis/grant-invoke-permission-to-routes'
+import {computeArn} from '../../arns'
+import grantInvokePermissionToRoutes from '../../actions/apis/grant-invoke-permission-to-routes'
 
 (async () => {
     const { profile, accountId, region, api } = await parseConfigurationFile('aws.json')
-    //const functionNames = parseFunctionNames({ functions })
 
     if (!api) {
         console.error('No API has been configured.')
@@ -21,7 +20,6 @@ import {grantInvokePermissionToRoutes} from '../../actions/apis/grant-invoke-per
 
     const { stages, routes } = api
 
-    // Create API
     const awsCli = createAwsCli(profile, region)
 
     const apiGatewayV2 = awsCli('apigatewayv2')
@@ -29,19 +27,24 @@ import {grantInvokePermissionToRoutes} from '../../actions/apis/grant-invoke-per
 
     const computeAccountArn = computeArn(region)(accountId)
 
+    // Create API
     const createdApi = await createApi(apiGatewayV2, api)
 
-    const id = property('ApiId')(createdApi)
+    const apiId = createdApi.ApiId
 
     const usedFunctions = unique(values(routes))
-    const integratedFunctions = await integrateFunctions(apiGatewayV2, computeAccountArn, id, usedFunctions)
+    // Integrate functions
+    const integratedFunctions = await integrateFunctions(apiGatewayV2, computeAccountArn, apiId, usedFunctions)
     const integrationIds = map(property('IntegrationId'))(integratedFunctions)
     const functionsAndIntegrationIds = fromEntries(zip(usedFunctions)(integrationIds))
     const routeKeysAndIntegrationIds = mapValues(propertyOf(functionsAndIntegrationIds))(routes)
 
-    await createApiStages(apiGatewayV2, id, stages)
+    // Create stages
+    await createApiStages(apiGatewayV2, apiId, stages)
 
-    await createApiRoutes(apiGatewayV2, id, routeKeysAndIntegrationIds)
+    // Create routes
+    await createApiRoutes(apiGatewayV2, apiId, routeKeysAndIntegrationIds)
 
-    await grantInvokePermissionToRoutes(apiGatewayV2, lambda, computeAccountArn, id, stages, routes)
+    // Grant invoke permissions to routes
+    await grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, stages, routes)
 })()

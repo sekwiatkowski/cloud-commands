@@ -9,7 +9,7 @@ import {parseFunctionNames} from '../../cli-arguments'
 
 (async () => {
     const { functions, esbuild } = await parseConfigurationFile('aws.json')
-    const functionNames = parseFunctionNames({ functions })
+    const functionNames = parseFunctionNames(functions)
 
     const actions = map
         (name => () => deleteDistribution(name).then(() => buildFunction(esbuild)(name)))
