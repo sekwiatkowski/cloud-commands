@@ -27,16 +27,16 @@ function computeTokenValidityConfiguration(token) {
     return validities => [ `${token}-token-validity`, validities[token] ]
 }
 
-export default async function createUserPoolClient(cognitoIdp, { name, client }) {
-    const userPoolId = await findUserPoolIdByName(cognitoIdp, name)
+export default async function createUserPoolClient(cognitoIdp, userPoolName, clientName, clientOptions) {
+    const userPoolId = await findUserPoolIdByName(cognitoIdp, userPoolName)
 
     const requiredConfiguration = [
         [ 'user-pool-id', userPoolId ],
-        [ 'client-name', client.name ],
+        [ 'client-name', clientName ],
         computeFlowConfiguration()
     ]
 
-    const { generateSecret, tokenValidityUnit, tokenValidity } = client
+    const { generateSecret, tokenValidityUnit, tokenValidity } = clientOptions
 
     const maybeGenerateSecret = maybeUndefined(generateSecret)
     const maybeGenerateSecretConfiguration = mapOption(computeSecretConfiguration) (maybeGenerateSecret)

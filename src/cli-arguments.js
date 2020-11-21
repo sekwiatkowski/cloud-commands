@@ -4,8 +4,8 @@ import {
     contains,
     difference,
     drop,
+    first,
     isEmpty,
-    isNotEmpty,
     isOfLengthOne,
     joinWithCommaSpace,
     joinWithSpace,
@@ -16,76 +16,81 @@ import {
     values
 } from 'standard-functions'
 
+function extractCliArguments () {
+    return drop(2) (process.argv)
+}
+
+function exitIfEmpty(message) {
+    return arr => {
+        if (isEmpty(arr)) {
+            console.error(message)
+            process.exit(0)
+        }
+    }
+}
+
 const containsWildcardOnly = allPass([ isOfLengthOne, contains('*') ])
 
-function extractCliArguments () {
-    return drop(2)(process.argv)
+function exitIfUnknown(singleMessage) {
+    return multipleMessage=> arr => {
+        if (isEmpty(arr)) {
+            return
+        }
+        const message = isOfLengthOne(arr)
+            ? singleMessage(first(arr))
+            : multipleMessage(arr)
+
+        console.error(message)
+        process.exit(1)
+    }
 }
 
 export function parseFunctionNames(functions) {
-    const specifiedFunctionNames = extractCliArguments()
+    const selectedFunctionNames = extractCliArguments()
 
-    if (isEmpty(specifiedFunctionNames)) {
-        console.error('Please specify at least one function.')
-        process.exit(1)
-    }
+    exitIfEmpty('Please specify at least one function.') (selectedFunctionNames)
 
     const allFunctionNames = keys(functions)
 
-    if (containsWildcardOnly(specifiedFunctionNames)) {
+    if (containsWildcardOnly(selectedFunctionNames)) {
         return allFunctionNames
     }
 
-    const unknownFunctionNames = difference(specifiedFunctionNames)(allFunctionNames)
+    const unknownFunctionNames = difference(selectedFunctionNames) (allFunctionNames)
 
-    if (isNotEmpty(unknownFunctionNames)) {
-        if (isOfLengthOne (unknownFunctionNames)) {
-            console.error(`Specified function "${unknownFunctionNames[0]}" is unknown.`)
-            process.exit(1)
-        }
-        else {
-            console.error(`The following specified functions are unknown: ${joinWithCommaSpace(unknownFunctionNames)}`)
-            process.exit(length(unknownFunctionNames))
-        }
-    }
+    exitIfUnknown
+        (single => `Function "${single}" is unknown.`)
+        (multiple => `The following functions are unknown: ${joinWithCommaSpace(multiple)}`)
+        (unknownFunctionNames)
 
-    return specifiedFunctionNames
+    return selectedFunctionNames
 }
 
 export function parseFunctions(functions) {
     const specifiedFunctionNames = parseFunctionNames(functions)
 
-    return pick(specifiedFunctionNames)(functions)
+    return pick(specifiedFunctionNames) (functions)
 }
 
 export function parseApiFunctionNames(routes) {
-    const specifiedFunctionNames = extractCliArguments()
+    const selectedFunctionNames = extractCliArguments()
 
-    if (isEmpty(specifiedFunctionNames)) {
-        console.error('Please specify at least one function used by the API.')
-        process.exit(1)
-    }
+    exitIfEmpty('Please specify at least one function used by the API.') (selectedFunctionNames)
 
     const usedFunctionNames = values(routes)
 
-    if (containsWildcardOnly(specifiedFunctionNames)) {
+    if (containsWildcardOnly(selectedFunctionNames)) {
         return usedFunctionNames
     }
 
-    const unknownFunctionNames = difference(specifiedFunctionNames)(usedFunctionNames)
+    const unknownFunctionNames = difference(selectedFunctionNames) (usedFunctionNames)
 
-    if (isNotEmpty(unknownFunctionNames)) {
-        if (isOfLengthOne (unknownFunctionNames)) {
-            console.error(`Specified function "${unknownFunctionNames[0]}" is not used by the API.`)
-            process.exit(1)
-        }
-        else {
-            console.error(`The following specified functions are unknown: ${joinWithCommaSpace(unknownFunctionNames)}`)
-            process.exit(length(unknownFunctionNames))
-        }
-    }
+    exitIfUnknown
+        (single => `Function "${single}" is not used by the API.`)
+        (multiple => `The following API functions are unknown: ${joinWithCommaSpace(multiple)}`)
+        (unknownFunctionNames)
 
-    return specifiedFunctionNames
+    return selectedFunctionNames
 }
 
 export function parseApiRoutes(routes) {
@@ -108,44 +113,48 @@ export function parseApiRoutes(routes) {
 
     const unknownRouteKeys = difference(specifiedRouteKeys)(knownRouteKeys)
 
-    if (isNotEmpty(unknownRouteKeys)) {
-        if (isOfLengthOne (unknownRouteKeys)) {
-            console.error(`Specified route key "${unknownRouteKeys[0]}" is unknown.`)
-            process.exit(1)
-        }
-        else {
-            console.error(`The following specified route keys are unknown: ${joinWithCommaSpace(unknownRouteKeys)}`)
-            process.exit(length(unknownRouteKeys))
-        }
-    }
+    exitIfUnknown
+        (single => `Route key "${single}" is unknown.`)
+        (multiple => `The following route keys are unknown: ${joinWithCommaSpace(multiple)}`)
+        (unknownRouteKeys)
 
-    return pick(specifiedRouteKeys)(routes)
+    return pick(specifiedRouteKeys) (routes)
 }
 
 export function parseApiStages(knownStages) {
-    const specifiedStages = extractCliArguments()
+    const selectedStages = extractCliArguments()
 
-    if (isEmpty(specifiedStages)) {
-        console.error(`Please specify at least one API stage.`)
-        process.exit(1)
-    }
+    exitIfEmpty('Please specify at least one API stage.') (selectedStages)
 
-    if (containsWildcardOnly(specifiedStages)) {
+    if (containsWildcardOnly(selectedStages)) {
         return knownStages
     }
 
-    const unknownStages = difference(specifiedStages)(knownStages)
+    const unknownStages = difference(selectedStages) (knownStages)
 
-    if (isNotEmpty(unknownStages)) {
-        if (isOfLengthOne (unknownStages)) {
-            console.error(`Specified stage "${unknownStages[0]}" is unknown.`)
-            process.exit(1)
-        }
-        else {
-            console.error(`The following specified stages are unknown: ${joinWithCommaSpace(unknownStages)}`)
-            process.exit(length(unknownStages))
-        }
+    exitIfUnknown
+        (single => `API stage "${single}" is unknown.`)
+        (multiple => `The following API stages are unknown: ${joinWithCommaSpace(multiple)}`)
+        (unknownStages)
+
+    return selectedStages
+}
+
+export function parseUserPoolClients(knownClients) {
+    const selectedClients = extractCliArguments()
+
+    exitIfEmpty('Please specify at least one user pool client.') (selectedClients)
+
+    if (containsWildcardOnly(selectedClients)) {
+        return knownClients
     }
 
-    return unknownStages
+    const unknownStages = difference(selectedClients) (knownClients)
+
+    exitIfUnknown
+        (single => `User pool client "${single}" is unknown.`)
+        (multiple => `The following clients are unknown: ${joinWithCommaSpace(multiple)}`)
+        (unknownStages)
+
+    return pick(selectedClients) (knownClients)
 }
