@@ -28,6 +28,8 @@ export default function grantInvokePermission(lambda) {
 
             const command = lambda('add-permission') (options)
 
+            console.log(command)
+
             return executeCommand(command)
         }
     }

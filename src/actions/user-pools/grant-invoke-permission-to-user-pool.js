@@ -11,7 +11,7 @@ function grantInvokePermissionToUserPoolFunction(lambda, computeAccountArn) {
             const functionArn = computeLambdaFunctionArn(computeAccountArn) (functionName)
             const sourceArn = computeUserPoolArn(computeAccountArn) (userPoolId)
 
-            return () => grantInvokePermission(lambda) ('apigateway.amazonaws.com') (sourceArn, functionArn)
+            return () => grantInvokePermission(lambda) ('cognito-idp.amazonaws.com') (sourceArn, functionArn)
         }
     }
 }
