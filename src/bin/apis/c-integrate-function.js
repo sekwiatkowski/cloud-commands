@@ -4,8 +4,8 @@ import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {parseApiFunctionNames} from '../../cli-arguments'
 import {integrateFunctions} from '../../actions/apis/integrate-function'
-import computeArn from '../../arns'
 import {findApiIdByName} from '../../additional-information/api-id'
+import {computeArn} from '../../arns'
 
 (async () => {
     const { api, profile, region, accountId } = await parseConfigurationFile('aws.json')
@@ -22,7 +22,7 @@ import {findApiIdByName} from '../../additional-information/api-id'
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
-    const computeAccountArn = computeArn(region)(accountId)
+    const computeAccountArn = computeArn(region) (accountId)
 
     const id = await findApiIdByName(apiGatewayV2, name)
 
