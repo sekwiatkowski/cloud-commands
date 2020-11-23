@@ -1,6 +1,6 @@
 {
     "name": "cloud-commands",
-    "version": "0.3.7",
+    "version": "0.3.9",
     "bin": {
         "c-create-function": "src/bin/functions/c-create-function.js",
         "c-delete-distribution": "src/bin/functions/c-delete-distribution.js",
