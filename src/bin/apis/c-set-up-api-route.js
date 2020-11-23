@@ -24,9 +24,6 @@ import {computeArn} from '../../arns'
 
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
-    const lambda = awsCli('lambda')
-
-    const computeAccountArn = computeArn(region)(accountId)
 
     const apiId = await findApiIdByName(apiGatewayV2, name)
 
@@ -35,6 +32,9 @@ import {computeArn} from '../../arns'
     const routeKeysAndIntegrationIds = mapValues(propertyOf(integrationIds))(specifiedRoutes)
 
     await createApiRoutes(apiGatewayV2, apiId, routeKeysAndIntegrationIds)
+
+    const lambda = awsCli('lambda')
+    const computeAccountArn = computeArn(region)(accountId)
 
     await grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, stages, specifiedRoutes)
 })()

@@ -1,6 +1,6 @@
 {
     "name": "cloud-commands",
-    "version": "0.3.8",
+    "version": "0.3.7",
     "bin": {
         "c-create-function": "src/bin/functions/c-create-function.js",
         "c-delete-distribution": "src/bin/functions/c-delete-distribution.js",
@@ -10,9 +10,9 @@
         "c-update-function": "src/bin/functions/c-update-function.js",
         "c-create-api": "src/bin/apis/c-create-api.js",
         "c-create-api-stage": "src/bin/apis/c-create-api-stage.js",
-        "c-create-api-route": "src/bin/apis/c-create-api-route.js",
         "c-integrate-function": "src/bin/apis/c-integrate-function.js",
         "c-set-up-api": "src/bin/apis/c-set-up-api.js",
+        "c-set-up-api-route": "src/bin/apis/c-set-up-api-route.js",
         "c-delete-api": "src/bin/apis/c-delete-api.js",
         "c-create-user-pool": "src/bin/user-pools/c-create-user-pool.js",
         "c-create-user-pool-client": "src/bin/user-pools/c-create-user-pool-client.js"
