@@ -16,7 +16,7 @@ import {
     values
 } from 'standard-functions'
 
-function extractCliArguments () {
+export function extractCliArguments () {
     return drop(2) (process.argv)
 }
 
@@ -93,8 +93,11 @@ export function parseApiFunctionNames(routes) {
     return selectedFunctionNames
 }
 
+export const extractBigrams = chunk(2)
+
 export function parseApiRoutes(routes) {
     const userInput = extractCliArguments()
+    const bigrams = extractBigrams(userInput)
 
     const knownRouteKeys = keys(routes)
 
@@ -106,8 +109,6 @@ export function parseApiRoutes(routes) {
         console.error(`Please specify a space-separated list of route keys.`)
         process.exit(1)
     }
-
-    const bigrams = chunk(2) (userInput)
 
     const specifiedRouteKeys = map(joinWithSpace) (bigrams)
 
