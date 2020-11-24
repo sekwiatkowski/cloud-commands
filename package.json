@@ -1,12 +1,13 @@
 {
     "name": "cloud-commands",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "bin": {
         "c-create-function": "src/bin/functions/c-create-function.js",
         "c-delete-distribution": "src/bin/functions/c-delete-distribution.js",
         "c-build-function": "src/bin/functions/c-build-function.js",
         "c-zip-function": "src/bin/functions/c-zip-function.js",
         "c-configure-function": "src/bin/functions/c-configure-function.js",
+        "c-delete-function": "src/bin/functions/c-delete-function.js",
         "c-update-function": "src/bin/functions/c-update-function.js",
         "c-create-api": "src/bin/apis/c-create-api.js",
         "c-create-api-stage": "src/bin/apis/c-create-api-stage.js",

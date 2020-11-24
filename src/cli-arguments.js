@@ -20,7 +20,7 @@ export function extractCliArguments () {
     return drop(2) (process.argv)
 }
 
-function exitIfEmpty(message) {
+export function exitIfEmpty(message) {
     return arr => {
         if (isEmpty(arr)) {
             console.error(message)
@@ -31,7 +31,7 @@ function exitIfEmpty(message) {
 
 const containsWildcardOnly = allPass([ isOfLengthOne, contains('*') ])
 
-function exitIfUnknown(singleMessage) {
+export function exitIfUnknown(singleMessage) {
     return multipleMessage=> arr => {
         if (isEmpty(arr)) {
             return

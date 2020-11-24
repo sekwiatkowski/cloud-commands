@@ -2,10 +2,11 @@
 
 import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
-import {extractBigrams, extractCliArguments} from '../../cli-arguments'
+import {exitIfEmpty, exitIfUnknown, extractBigrams, extractCliArguments} from '../../cli-arguments'
 import {findApiIdByName} from '../../additional-information/api-id'
 import {getAllRouteKeys} from '../../additional-information/all-api-route-keys'
 import {
+    difference,
     filter,
     first,
     isLongerThan,
@@ -29,6 +30,11 @@ import {deleteApiRoutes} from '../../actions/apis/delete-api-route'
 
     const { name } = api
 
+    const userInput = extractCliArguments()
+    const routeKeysToBeDeleted = extractBigrams(userInput)
+
+    exitIfEmpty('Please specify at least one route.') (routeKeysToBeDeleted)
+
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
@@ -37,24 +43,13 @@ import {deleteApiRoutes} from '../../actions/apis/delete-api-route'
 
     console.log('Retrieving existing routes ...')
     const routeKeyMapping = await getAllRouteKeys(apiGatewayV2, apiId)
-
-    const userInput = extractCliArguments()
-    const routeKeysToBeDeleted = extractBigrams(userInput)
     const serializedRouteKeysToBeDeleted = map(joinWithSpace) (routeKeysToBeDeleted)
 
-    const doesNotExist = routeKey => !isPropertyOf(routeKeyMapping) (routeKey)
-    const unknownRouteKeys = filter(doesNotExist) (serializedRouteKeysToBeDeleted)
-
-    if(isNotEmpty(unknownRouteKeys)) {
-        if (isOfLengthOne(unknownRouteKeys)) {
-            console.error(`A route with the key ${first(unknownRouteKeys)} does not exist.`)
-            process.exit(-1)
-        }
-        else if (isLongerThan(1)(unknownRouteKeys)) {
-            console.error(`Routes with the following keys do not exist: ${joinWithCommaSpace(unknownRouteKeys)}.`)
-            process.exit(-1)
-        }
-    }
+    const unknownRouteKeys = difference (serializedRouteKeysToBeDeleted) (keys(routeKeyMapping))
+    exitIfUnknown
+        (key => `A route with the key "${key}" does not exist.`)
+        (keys => `Routes with the following keys do not exist: ${joinWithCommaSpace(keys)}.`)
+        (unknownRouteKeys)
 
     const routeKeysAndIds = pick(serializedRouteKeysToBeDeleted) (routeKeyMapping)
 
