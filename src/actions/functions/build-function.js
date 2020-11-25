@@ -3,15 +3,9 @@ import {executeInDirectory} from '../../execution'
 import {concat, joinWithSpace, map} from 'standard-functions'
 
 function computeExternalOptions(externalConfiguration) {
-    const baseOptions = [
-        '--external:aws-sdk'
-    ]
-
-    const additionalOptions = externalConfiguration
+    return externalConfiguration
         ? map(external => `--external:${external}`) (externalConfiguration)
         : []
-
-    return concat([ baseOptions, additionalOptions ])
 }
 
 function computeEsBuildOptions(configuration) {
@@ -21,7 +15,8 @@ function computeEsBuildOptions(configuration) {
             '--platform=node',
             '--target=node12',
             sourcePath,
-            `--outfile=${buildPath}`
+            `--outfile=${buildPath}`,
+            '--external:aws-sdk'
         ]
 
         const externalOptions = configuration ? computeExternalOptions(configuration.external) : []
