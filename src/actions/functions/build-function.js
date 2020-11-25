@@ -14,7 +14,7 @@ function computeExternalOptions(externalConfiguration) {
     return concat([ baseOptions, additionalOptions ])
 }
 
-function computeEsBuildOptions({ external }) {
+function computeEsBuildOptions(configuration) {
     return (sourcePath, buildPath) => {
         const baseOptions = [
             '--bundle',
@@ -24,7 +24,7 @@ function computeEsBuildOptions({ external }) {
             `--outfile=${buildPath}`
         ]
 
-        const externalOptions = computeExternalOptions(external)
+        const externalOptions = configuration ? computeExternalOptions(configuration.external) : []
 
         const options = joinWithSpace(concat([ baseOptions, externalOptions ]))
 
