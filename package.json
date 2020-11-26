@@ -1,6 +1,6 @@
 {
     "name": "cloud-commands",
-    "version": "0.4.4",
+    "version": "0.5.0",
     "bin": {
         "c-create-function": "src/bin/functions/c-create-function.js",
         "c-delete-distribution": "src/bin/functions/c-delete-distribution.js",
@@ -17,6 +17,7 @@
         "c-set-up-api-route": "src/bin/apis/c-set-up-api-route.js",
         "c-delete-api": "src/bin/apis/c-delete-api.js",
         "c-create-user-pool": "src/bin/user-pools/c-create-user-pool.js",
+        "c-delete-user-pool": "src/bin/user-pools/c-delete-user-pool.js",
         "c-create-user-pool-client": "src/bin/user-pools/c-create-user-pool-client.js"
     },
     "dependencies": {
