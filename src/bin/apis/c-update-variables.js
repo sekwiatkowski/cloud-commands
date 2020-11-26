@@ -1,10 +1,10 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
 import {parseConfigurationFile} from '../../configuration'
-import {findApiIdByName} from '../../additional-information/api-id'
 import {createAwsCli} from '../../aws-cli'
-import {createApiStages} from '../../actions/apis/create-api-stage'
 import {parseApiStages} from '../../cli-arguments'
+import {findApiIdByName} from '../../additional-information/api-id'
+import updateVariablesInStages from '../../actions/apis/update-variables'
 
 (async () => {
     const { api, profile, region } = await parseConfigurationFile('aws.json')
@@ -21,7 +21,7 @@ import {parseApiStages} from '../../cli-arguments'
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
-    const id = await findApiIdByName(apiGatewayV2, name)
+    const apiId = await findApiIdByName(apiGatewayV2, name)
 
-    await createApiStages(apiGatewayV2, id, selectedStages)
+    await updateVariablesInStages(apiGatewayV2, apiId, selectedStages)
 })()

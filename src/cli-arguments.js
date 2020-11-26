@@ -131,14 +131,14 @@ export function parseApiStages(knownStages) {
         return knownStages
     }
 
-    const unknownStages = difference(selectedStages) (knownStages)
+    const unknownStages = difference(selectedStages) (keys(knownStages))
 
     exitIfUnknown
         (single => `API stage "${single}" is unknown.`)
         (multiple => `The following API stages are unknown: ${joinWithCommaSpace(multiple)}`)
         (unknownStages)
 
-    return selectedStages
+    return pick(selectedStages) (knownStages)
 }
 
 export function parseUserPoolClients(knownClients) {
