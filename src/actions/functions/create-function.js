@@ -1,40 +1,27 @@
-import {concat} from 'standard-functions'
-import {computeVpcConfig} from '../../vpc-config'
 import {executeInDirectory} from '../../execution'
+import {concat} from 'standard-functions'
+import {computeTagsSetting, computeZipSetting, createUpdateFunctionConfiguration} from '../../function-configuration'
 
-function computeTags(apiName) {
-    return `"API=${apiName}"`
-}
+function computeCreateOptions(name, role, runtime, vpc, description, api) {
+    const updateOptions = createUpdateFunctionConfiguration(name, role, runtime, vpc, description, api)
 
-function computeCreateOptions(role, runtime, name, description, vpc, api) {
-    const baseOptions = [
-        ['role', role],
-        ['runtime', runtime],
-        ['function-name', name],
-        ['description', `"${description}"`],
-        ['zip-file', `fileb://${name}.zip`],
-        ['handler', 'index.handler']
+    const zipFileOptions = [
+        ['zip-file', computeZipSetting(name)]
     ]
 
-    const vpcOptions = vpc
-        ? [['vpc-config', computeVpcConfig(vpc)]]
-        : []
-
     const tagOptions = api
-        ? [['tags', computeTags(api.name)]]
+        ? [['tags', computeTagsSetting(api.name)]]
         : []
 
-    const options = concat([ baseOptions, vpcOptions, tagOptions ])
-
-    return options
+    return concat([ updateOptions, zipFileOptions, tagOptions ])
 }
 
 export function createFunction(lambda) {
-    return (role, runtime, vpc, api) => {
-        return (name, {description}) => {
-            console.log(`Creating function ${name}`)
+    return (role, runtime, globalVpc, api) => {
+        return (name, {description, vpc}) => {
+            console.log(`Creating function ${name} ...`)
 
-            const options = computeCreateOptions(role, runtime, name, description, vpc, api)
+            const options = computeCreateOptions(name, role, runtime, vpc ?? globalVpc, description, api)
 
             const command = lambda('create-function') (options)
 

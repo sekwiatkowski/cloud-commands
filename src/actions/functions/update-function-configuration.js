@@ -1,15 +1,9 @@
 import {executeCommand} from '../../execution'
-import {computeVpcConfig} from '../../vpc-config'
+import {createUpdateFunctionConfiguration} from '../../function-configuration'
 
-export function updateFunctionConfiguration(lambda, role, runtime, vpc) {
-    return (name, {description}) => {
-        const options = [
-            ['function-name', name],
-            ['description', `"${description}"`],
-            ['role', role],
-            ['runtime', runtime],
-            ['vpc-config', computeVpcConfig(vpc)]
-        ]
+export function updateFunctionConfiguration(lambda, role, runtime, globalVpc, api) {
+    return (name, {description, vpc}) => {
+        const options = createUpdateFunctionConfiguration(name, role, runtime, vpc ?? globalVpc, description, api)
 
         const command = lambda('update-function-configuration')(options)
 

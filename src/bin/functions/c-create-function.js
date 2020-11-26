@@ -19,7 +19,7 @@ import {parseFunctions} from '../../cli-arguments'
 
     const namesAndConfigurations = entries(specifiedFunctions)
 
-    const boundCreateFunction = createFunction(lambdaCli)(role, runtime, vpc, api)
+    const boundCreateFunction = createFunction(lambdaCli) (role, runtime, vpc, api)
 
     const actions = map(([name, configuration]) => () =>
         deleteDistribution(name)
