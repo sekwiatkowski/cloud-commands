@@ -2,8 +2,8 @@ import {executeInDirectory} from '../../execution'
 import {concat} from 'standard-functions'
 import {computeTagsSetting, computeZipSetting, createUpdateFunctionConfiguration} from '../../function-configuration'
 
-function computeCreateOptions(name, role, runtime, vpc, description, api) {
-    const updateOptions = createUpdateFunctionConfiguration(name, role, runtime, vpc, description, api)
+function computeCreateOptions(name, role, runtime, timeout, vpc, description, api) {
+    const updateOptions = createUpdateFunctionConfiguration(name, role, runtime, timeout, vpc, description)
 
     const zipFileOptions = [
         ['zip-file', computeZipSetting(name)]
@@ -17,11 +17,11 @@ function computeCreateOptions(name, role, runtime, vpc, description, api) {
 }
 
 export function createFunction(lambda) {
-    return (role, runtime, globalVpc, api) => {
-        return (name, {description, vpc}) => {
+    return (role, runtime, globalTimeout, globalVpc, api) => {
+        return (name, {description, timeout, vpc}) => {
             console.log(`Creating function ${name} ...`)
 
-            const options = computeCreateOptions(name, role, runtime, vpc ?? globalVpc, description, api)
+            const options = computeCreateOptions(name, role, runtime, timeout ?? globalTimeout, vpc ?? globalVpc, description, api)
 
             const command = lambda('create-function') (options)
 

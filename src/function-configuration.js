@@ -1,4 +1,4 @@
-import {concat, joinWithComma, joinWithEqualitySign} from 'standard-functions'
+import {concat, joinWithComma, joinWithEqualitySign, toString} from 'standard-functions'
 
 function computeFragment(key) {
     return arr => {
@@ -25,7 +25,7 @@ export function computeZipSetting(functionName) {
     return `fileb://${functionName}.zip`
 }
 
-export function createUpdateFunctionConfiguration(name, role, runtime, vpc, description, api) {
+export function createUpdateFunctionConfiguration(name, role, runtime, timeout, vpc, description) {
     const baseOptions = [
         ['function-name', name],
         ['role', role],
@@ -34,11 +34,15 @@ export function createUpdateFunctionConfiguration(name, role, runtime, vpc, desc
         ['handler', 'index.handler']
     ]
 
+    const timeoutOptions = timeout
+        ? [['timeout', toString(timeout)]]
+        : []
+
     const vpcOptions = vpc
         ? [['vpc-config', computeVpcSetting(vpc)]]
         : []
 
-    const options = concat([ baseOptions, vpcOptions ])
+    const options = concat([ baseOptions, timeoutOptions, vpcOptions ])
 
     return options
 }

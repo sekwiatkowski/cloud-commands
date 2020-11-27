@@ -11,7 +11,7 @@ import zipFunction from '../../actions/functions/zip-function'
 import {parseFunctions} from '../../cli-arguments'
 
 (async () => {
-    const { profile, region, functions, esbuild, runtime, role, vpc, api } = await parseConfigurationFile('aws.json')
+    const { profile, region, role, esbuild, runtime, timeout, vpc, functions, api } = await parseConfigurationFile('aws.json')
     const specifiedFunctions = parseFunctions(functions)
 
     const awsCli = createAwsCli(profile, region)
@@ -19,7 +19,7 @@ import {parseFunctions} from '../../cli-arguments'
 
     const namesAndConfigurations = entries(specifiedFunctions)
 
-    const boundCreateFunction = createFunction(lambdaCli) (role, runtime, vpc, api)
+    const boundCreateFunction = createFunction(lambdaCli) (role, runtime, timeout, vpc, api)
 
     const actions = map(([name, configuration]) => () =>
         deleteDistribution(name)

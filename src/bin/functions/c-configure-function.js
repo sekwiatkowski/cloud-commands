@@ -8,7 +8,7 @@ import {parseFunctions} from '../../cli-arguments'
 import {updateFunctionConfiguration} from '../../actions/functions/update-function-configuration'
 
 (async () => {
-    const { profile, region, functions, runtime, role, vpc, api } = await parseConfigurationFile('aws.json')
+    const { profile, region, role, runtime, timeout, vpc, functions} = await parseConfigurationFile('aws.json')
     const specifiedFunctions = parseFunctions(functions)
 
     const awsCli = createAwsCli(profile, region)
@@ -16,7 +16,7 @@ import {updateFunctionConfiguration} from '../../actions/functions/update-functi
 
     const namesAndConfigurations = entries(specifiedFunctions)
 
-    const boundUpdateFunctionConfiguration = updateFunctionConfiguration(lambdaCli, role, runtime, vpc, api)
+    const boundUpdateFunctionConfiguration = updateFunctionConfiguration(lambdaCli, role, runtime, timeout, vpc)
 
     const actions = map(([name, configuration]) => () => boundUpdateFunctionConfiguration(name, configuration)) (namesAndConfigurations)
 
