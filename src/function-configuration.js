@@ -42,7 +42,7 @@ export function createUpdateFunctionConfiguration(name, role, runtime, timeout, 
         ? [['vpc-config', computeVpcSetting(vpc)]]
         : []
 
-    const options = concat([ baseOptions, timeoutOptions, vpcOptions ])
+    const options = concat(baseOptions, timeoutOptions, vpcOptions)
 
     return options
 }

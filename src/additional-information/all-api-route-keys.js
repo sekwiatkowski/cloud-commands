@@ -12,7 +12,7 @@ function computeGetRoutes(apiId, token) {
         ? [['starting-token', token]]
         : []
 
-    return [subcommand, concat ([baseOptions, tokenOptions])]
+    return [subcommand, concat(baseOptions, tokenOptions)]
 }
 
 export function getAllRouteKeys(apiGatewayV2, apiId, routeKeys = [], token = undefined) {

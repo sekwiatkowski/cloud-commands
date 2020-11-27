@@ -13,7 +13,7 @@ function computeCreateOptions(name, role, runtime, timeout, vpc, description, ap
         ? [['tags', computeTagsSetting(api.name)]]
         : []
 
-    return concat([ updateOptions, zipFileOptions, tagOptions ])
+    return concat(updateOptions, zipFileOptions, tagOptions)
 }
 
 export function createFunction(lambda) {

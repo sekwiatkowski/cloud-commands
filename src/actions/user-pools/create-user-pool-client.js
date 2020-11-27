@@ -57,7 +57,7 @@ export default async function createUserPoolClient(cognitoIdp, userPoolName, cli
         maybeRefreshTokenValidityConfiguration
     ])
 
-    const configuration = concat([ requiredConfiguration, optionalConfiguration ])
+    const configuration = concat(requiredConfiguration, optionalConfiguration)
 
     const command = cognitoIdp('create-user-pool-client') (configuration)
 

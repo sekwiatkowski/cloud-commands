@@ -17,7 +17,7 @@ function computeCreateRouteOptions(apiId) {
             ]
             : []
 
-        return concat([baseOptions, authorizerOptions])
+        return concat(baseOptions, authorizerOptions)
     }
 }
 

@@ -1,6 +1,6 @@
 import {executeCommand} from '../../execution'
 import {performSequentially} from '../../perform-sequentially'
-import {map, mapEntries} from 'standard-functions'
+import {mapEntries} from 'standard-functions'
 import serializeStageVariables from '../../stage-variables'
 
 function computeCreateStageOptions(apiId) {

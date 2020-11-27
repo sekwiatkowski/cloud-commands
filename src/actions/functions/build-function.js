@@ -21,7 +21,7 @@ function computeEsBuildOptions(configuration) {
 
         const externalOptions = configuration ? computeExternalOptions(configuration.external) : []
 
-        const options = joinWithSpace(concat([ baseOptions, externalOptions ]))
+        const options = joinWithSpace(concat(baseOptions, externalOptions))
 
         return options
     }

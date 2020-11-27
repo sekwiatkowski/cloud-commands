@@ -51,7 +51,7 @@ function computeCreateApiOptions(name, description, cors, routes) {
 
     const corsOptions = computeCorsOptions(cors, routes)
 
-    const options = concat([baseOptions, corsOptions])
+    const options = concat(baseOptions, corsOptions)
 
     return options
 }

@@ -19,10 +19,10 @@ export function getAllFunctionNames(lambda, collection = [], token = undefined) 
         .then(JSON.parse)
         .then(({ Functions, NextToken }) => {
             const additionalFunctionNames = map(property('FunctionName'))(Functions)
-            const updatedCollection = concat([collection, additionalFunctionNames])
+            const updatedCollection = concat(collection, additionalFunctionNames)
 
             return NextToken
-                ? listAllFunctions(lambda, updatedCollection, NextToken)
+                ? getAllFunctionNames(lambda, updatedCollection, NextToken)
                 : updatedCollection
         })
 }
