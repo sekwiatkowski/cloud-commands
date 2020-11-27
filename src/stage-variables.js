@@ -3,7 +3,7 @@ import {joinWithComma, joinWithEqualitySign, mapEntries, surroundWithDoubleQuote
 function serializeSetting([key, value]) {
     const escapedValue = surroundWithDoubleQuotes(value)
 
-    return joinWithEqualitySign([key, escapedValue])
+    return joinWithEqualitySign(key, escapedValue)
 }
 
 export default function serializeStageVariables(stageVariables) {

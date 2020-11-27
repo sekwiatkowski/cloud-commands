@@ -35,7 +35,7 @@ function computePasswordConfiguration({ minimumLength, requireUppercase, require
 
 function computeLambdaConfiguration(computeAccountArn) {
     return ({ preSignUp }) => {
-        return ['lambda-config', joinWithEqualitySign(['PreSignUp', computeLambdaFunctionArn(computeAccountArn) (preSignUp)])]
+        return ['lambda-config', joinWithEqualitySign('PreSignUp', computeLambdaFunctionArn(computeAccountArn) (preSignUp))]
     }
 }
 

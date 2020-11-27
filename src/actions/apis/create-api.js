@@ -30,16 +30,16 @@ function computeCorsOptions(configuration, routes) {
 
     const { origins, allowHeaders, exposeHeaders, credentials } = configuration
 
-    const setEqual = (name, value) => joinWithEqualitySign([name, value])
+    const setEqual = (name, value) => joinWithEqualitySign(name, value)
     const wildcardOrList = value => value === '*' ? '*' : joinWithComma(value)
 
-    const corsConfigurationValue = joinWithComma([
+    const corsConfigurationValue = joinWithComma(
         setEqual('AllowOrigins', wildcardOrList(origins)),
         setEqual('AllowMethods', joinWithComma(uniqueMethods)),
         setEqual('AllowHeaders', wildcardOrList(allowHeaders)),
         setEqual('ExposeHeaders', wildcardOrList(exposeHeaders)),
         setEqual('AllowCredentials', credentials ? 'true' : 'false')
-    ])
+    )
 
     return [
         ['cors-configuration', corsConfigurationValue ]

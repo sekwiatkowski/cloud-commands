@@ -1,4 +1,4 @@
-import {isArray, map} from 'standard-functions'
+import {isArray, joinWithSpace, map} from 'standard-functions'
 
 function generateOption(option) {
     switch (isArray(option)) {
@@ -12,14 +12,14 @@ function generateOption(option) {
 
 export function createAwsCli(profile, region) {
     return service => command => options =>
-        [
+        joinWithSpace(
             'aws',
             service,
             command,
-            map(generateOption)([
+            joinWithSpace(map(generateOption)([
                 ['profile', profile],
                 ['region', region],
                 ...options
-            ]).join(' ')
-        ].join(' ')
+            ]))
+        )
 }

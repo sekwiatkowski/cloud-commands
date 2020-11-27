@@ -3,7 +3,7 @@
 // arn:partition:service:region:account-id:resource-type/resource-id
 
 export function computeArn(region) {
-    return accountId => service => resource =>  [
+    return accountId => service => resource => [
         'arn',
         'aws',
         service,
