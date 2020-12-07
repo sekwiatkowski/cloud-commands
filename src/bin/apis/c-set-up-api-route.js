@@ -5,7 +5,7 @@ import {findApiIdByName} from '../../additional-information/api-id'
 import {createAwsCli} from '../../aws-cli'
 import {parseApiRoutes} from '../../cli-arguments'
 import {createApiRoutes} from '../../actions/apis/create-api-route'
-import {mapValues, propertyOf, unique, values} from 'standard-functions'
+import {keys, mapValues, propertyOf, unique, values} from 'standard-functions'
 import {findIntegrationIdsByNames} from '../../additional-information/integration-id'
 import grantInvokePermissionToRoutes from '../../actions/apis/grant-invoke-permission-to-routes'
 import {computeArn} from '../../arns'
@@ -36,5 +36,5 @@ import {computeArn} from '../../arns'
     const lambda = awsCli('lambda')
     const computeAccountArn = computeArn(region)(accountId)
 
-    await grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, stages, specifiedRoutes)
+    await grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, keys(stages), specifiedRoutes)
 })()

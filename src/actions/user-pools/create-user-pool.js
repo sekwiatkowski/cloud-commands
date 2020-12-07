@@ -33,9 +33,34 @@ function computePasswordConfiguration({ minimumLength, requireUppercase, require
     return ['policies', `PasswordPolicy={${joinWithComma(presentSettings)}}`]
 }
 
+function computeVerifyEmailConfiguration(verifyEmail) {
+    return verifyEmail ? [ 'auto-verified-attributes', 'email' ] : []
+}
+
 function computeLambdaConfiguration(computeAccountArn) {
-    return ({ preSignUp }) => {
-        return ['lambda-config', joinWithEqualitySign('PreSignUp', computeLambdaFunctionArn(computeAccountArn) (preSignUp))]
+    const computeArnForAccount = computeLambdaFunctionArn(computeAccountArn)
+
+    function computeTriggerSetting(trigger) {
+        return functionName => joinWithEqualitySign(trigger, computeArnForAccount(functionName))
+    }
+
+    function computeOptionalTriggerSetting([trigger, functionName]) {
+        const maybeFunctionName = maybeUndefined(functionName)
+
+        return mapOption(computeTriggerSetting(trigger)) (maybeFunctionName)
+    }
+
+    return ({ preSignUp, customMessage }) => {
+        const optionalTriggers = [
+            ['PreSignUp', preSignUp],
+            ['CustomMessage', customMessage]
+        ]
+
+        const optionalTriggerSettings = map(computeOptionalTriggerSetting) (optionalTriggers)
+
+        const settings = concatOptions(optionalTriggerSettings)
+
+        return ['lambda-config', joinWithComma(settings) ]
     }
 }
 
@@ -69,11 +94,14 @@ function computeUsernameAttributes(attributes) {
     return ['username-attributes', joinWithSpace(attributes) ]
 }
 
-export default function createUserPool(cognitoIdp, computeAccountArn, { name, passwords, lambda, schema, username }) {
+export default function createUserPool(cognitoIdp, computeAccountArn, { name, passwords, verifyEmail, lambda, schema, username }) {
     const nameConfiguration = computeNameConfiguration(name)
 
     const maybePasswords = maybeUndefined(passwords)
     const maybePasswordConfiguration = mapOption(computePasswordConfiguration) (maybePasswords)
+
+    const maybeVerifyEmail = maybeUndefined(verifyEmail)
+    const maybeVerifyEmailConfiguration = mapOption(computeVerifyEmailConfiguration) (maybeVerifyEmail)
 
     const maybeLambda = maybeUndefined(lambda)
     const maybeLambdaConfiguration = mapOption(computeLambdaConfiguration(computeAccountArn)) (maybeLambda)
@@ -91,6 +119,7 @@ export default function createUserPool(cognitoIdp, computeAccountArn, { name, pa
 
     const configuration = concatOptions([
         maybePasswordConfiguration,
+        maybeVerifyEmailConfiguration,
         maybeLambdaConfiguration,
         maybeSchemaConfiguration,
         maybeUsernameCaseSensitivityConfiguration,

@@ -5,7 +5,7 @@ import serializeStageVariables from '../../stage-variables'
 
 
 function updateVariablesInStage(apiGatewayV2, apiId, stageName, stageVariables) {
-    console.log(`Updating variables in stage "${name}" ...`)
+    console.log(`Updating variables in stage "${stageName}" ...`)
 
     const options = [
         ['api-id', apiId],

@@ -4,7 +4,7 @@ import {mapEntries} from 'standard-functions'
 import serializeStageVariables from '../../stage-variables'
 
 function computeCreateStageOptions(apiId) {
-    return ([name, variables]) =>
+    return (name, variables) =>
         [
             ['api-id', apiId],
             ['stage-name', name],
@@ -14,7 +14,7 @@ function computeCreateStageOptions(apiId) {
 }
 
 export function createApiStage(apiGatewayV2, apiId) {
-    return ([name, variables]) => {
+    return (name, variables) => {
         console.log(`Creating stage "${name}" ...`)
 
         const options = computeCreateStageOptions(apiId)(name, variables)
