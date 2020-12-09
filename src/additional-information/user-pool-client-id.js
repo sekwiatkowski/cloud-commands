@@ -1,8 +1,9 @@
 import {executeCommand} from '../execution'
 import {concat, find, isEmpty} from 'standard-functions'
 
-function computeListUserPools(token) {
+function computeListUserPoolClientss(poolId, token) {
     const baseOptions = [
+        ['user-pool-id', poolId],
         ['max-results', 20]
     ]
 
@@ -13,9 +14,9 @@ function computeListUserPools(token) {
     return concat(baseOptions, tokenOptions)
 }
 
-export function findUserPoolIdByName(cognitoIdp, userPoolName, token) {
-    const options = computeListUserPools(token)
-    const command = cognitoIdp('list-user-pools') (options)
+export function findUserPoolClientIdByName(cognitoIdp, poolId, clientName, token) {
+    const options = computeListUserPoolClientss(poolId, token)
+    const command = cognitoIdp('list-user-pool-clients') (options)
 
     return executeCommand(command)
         .then(JSON.parse)
@@ -24,14 +25,14 @@ export function findUserPoolIdByName(cognitoIdp, userPoolName, token) {
                 return null
             }
 
-            const {UserPools, NextToken} = res
-            const found = find(item => item.Name === userPoolName) (UserPools)
+            const {UserPoolClients, NextToken} = res
+            const found = find(item => item.ClientName === clientName) (UserPoolClients)
 
             if (found) {
-                return found.Id
+                return found.ClientId
             }
             else if(NextToken) {
-                return findUserPoolIdByName(cognitoIdp, userPoolName, NextToken)
+                return findUserPoolClientIdByName(cognitoIdp, poolId, clientName, NextToken)
             }
             else {
                 return null

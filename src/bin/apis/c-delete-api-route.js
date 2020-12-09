@@ -6,6 +6,7 @@ import {exitIfEmpty, exitIfUnknown, extractBigrams, extractCliArguments} from '.
 import {findApiIdByName} from '../../additional-information/api-id'
 import {getAllRouteKeys} from '../../additional-information/all-api-route-keys'
 import {
+    asyncMap,
     difference,
     filter,
     first,
@@ -14,11 +15,12 @@ import {
     isOfLengthOne,
     isPropertyOf,
     joinWithCommaSpace,
-    joinWithSpace,
+    joinWithSpace, keys,
     map,
-    pick
+    pick, property, values
 } from 'standard-functions'
 import {deleteApiRoutes} from '../../actions/apis/delete-api-route'
+import combineApiAndStageName from '../../api-name'
 
 (async () => {
     const { profile, region, api } = await parseConfigurationFile('aws.json')
@@ -28,7 +30,7 @@ import {deleteApiRoutes} from '../../actions/apis/delete-api-route'
         process.exit(1)
     }
 
-    const { name } = api
+    const { name, stages } = api
 
     const userInput = extractCliArguments()
     const routeKeysToBeDeleted = extractBigrams(userInput)
@@ -38,20 +40,27 @@ import {deleteApiRoutes} from '../../actions/apis/delete-api-route'
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
-    console.log('Retrieving API ID ...')
-    const apiId = await findApiIdByName(apiGatewayV2, name)
+    console.log('Retrieving API IDs ...')
+    const stageNames = map(property('name')) (values(stages))
+    const combinedNames = map(combineApiAndStageName(name)) (stageNames)
+
+    const apiIds = await asyncMap(combinedName =>
+        findApiIdByName(apiGatewayV2, combinedName)
+    )(combinedNames)
 
     console.log('Retrieving existing routes ...')
-    const routeKeyMapping = await getAllRouteKeys(apiGatewayV2, apiId)
-    const serializedRouteKeysToBeDeleted = map(joinWithSpace) (routeKeysToBeDeleted)
+    const routeKeysAndIds = await asyncMap(async(apiId) => {
+        const routeKeyMapping = await getAllRouteKeys(apiGatewayV2, apiId)
+        const serializedRouteKeysToBeDeleted = map(joinWithSpace) (routeKeysToBeDeleted)
 
-    const unknownRouteKeys = difference (serializedRouteKeysToBeDeleted) (keys(routeKeyMapping))
-    exitIfUnknown
-        (key => `A route with the key "${key}" does not exist.`)
-        (keys => `Routes with the following keys do not exist: ${joinWithCommaSpace(keys)}.`)
-        (unknownRouteKeys)
+        const unknownRouteKeys = difference (serializedRouteKeysToBeDeleted) (keys(routeKeyMapping))
+            exitIfUnknown
+            (key => `A route with the key "${key}" does not exist.`)
+            (keys => `Routes with the following keys do not exist: ${joinWithCommaSpace(keys)}.`)
+            (unknownRouteKeys)
 
-    const routeKeysAndIds = pick(serializedRouteKeysToBeDeleted) (routeKeyMapping)
+        return pick(serializedRouteKeysToBeDeleted) (routeKeyMapping)
+    })(apiIds)
 
-    await deleteApiRoutes(apiGatewayV2, apiId, routeKeysAndIds)
+    await deleteApiRoutes(apiGatewayV2, stageNames, apiIds, routeKeysAndIds)
 })()

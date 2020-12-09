@@ -1,4 +1,4 @@
-import {flatMap, mapEntries, splitBySpace} from 'standard-functions'
+import {map, mapEntries, splitBySpace, zip} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import {computeExecuteApiArn, computeLambdaFunctionArn} from '../../arns'
 import grantInvokePermission from '../../invoke-permissions'
@@ -18,19 +18,22 @@ function grantInvokePermissionToRoute(lambda, computeAccountArn) {
     }
 }
 
-export default async function grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, stages, routes) {
+export default async function grantInvokePermissionToRoutes(lambda, computeAccountArn, stageKeys, apiIds, routes) {
+    console.log('Granting invoke permissions to routes ...')
+
     const grantToAccount = grantInvokePermissionToRoute(lambda, computeAccountArn)
-    const grantToApi = grantToAccount(apiId)
 
-    const actions = flatMap(stage => {
-        const grantToStage = grantToApi(stage)
+    const actions = map(([stageKey, apiId]) => () => {
+        const grantToStage = grantToAccount(apiId) (stageKey)
 
-        return mapEntries
+        const stageActions = mapEntries
             (([routeKey, functionName]) => () =>
                 grantToStage(splitBySpace(routeKey), functionName)
             )
             (routes)
-    }) (stages)
+
+        return performSequentially(stageActions)
+    }) (zip(stageKeys, apiIds))
 
     return performSequentially(actions)
 }

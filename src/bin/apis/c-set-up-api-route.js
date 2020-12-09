@@ -1,14 +1,17 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
 import {parseConfigurationFile} from '../../configuration'
-import {findApiIdByName} from '../../additional-information/api-id'
 import {createAwsCli} from '../../aws-cli'
 import {parseApiRoutes} from '../../cli-arguments'
-import {createApiRoutes} from '../../actions/apis/create-api-route'
-import {keys, mapValues, propertyOf, unique, values} from 'standard-functions'
+import {asyncMap, keys, map, property, unique, values} from 'standard-functions'
+import createApiRoutes from '../../actions/apis/create-api-route'
+import combineApiAndStageName from '../../api-name'
+import {findApiIdByName} from '../../additional-information/api-id'
 import {findIntegrationIdsByNames} from '../../additional-information/integration-id'
 import grantInvokePermissionToRoutes from '../../actions/apis/grant-invoke-permission-to-routes'
 import {computeArn} from '../../arns'
+import {getAuthorizerIdByApiId} from '../../additional-information/authorizer-id'
+
 
 (async () => {
     const { profile, accountId, region, api } = await parseConfigurationFile('aws.json')
@@ -18,23 +21,34 @@ import {computeArn} from '../../arns'
         process.exit(1)
     }
 
-    const { name, routes, stages } = api
+    const { authorization, routes, stages, name } = api
 
-    const specifiedRoutes = parseApiRoutes(routes)
+    const selectedRoutes = parseApiRoutes(routes)
 
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
-
-    const apiId = await findApiIdByName(apiGatewayV2, name)
-
-    const usedFunctions = unique(values(specifiedRoutes))
-    const integrationIds = await findIntegrationIdsByNames(apiGatewayV2, apiId, usedFunctions)
-    const routeKeysAndIntegrationIds = mapValues(propertyOf(integrationIds))(specifiedRoutes)
-
-    await createApiRoutes(apiGatewayV2, apiId, routeKeysAndIntegrationIds)
-
     const lambda = awsCli('lambda')
-    const computeAccountArn = computeArn(region)(accountId)
 
-    await grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, keys(stages), specifiedRoutes)
+    const computeAccountArn = computeArn(region) (accountId)
+
+    const stageNames = map(property('name')) (values(stages))
+    const combinedNames = map(combineApiAndStageName(name)) (stageNames)
+
+    const apiIds = await asyncMap(combinedName =>
+        findApiIdByName(apiGatewayV2, combinedName)
+    )(combinedNames)
+
+    const authorizerIds = await (authorization
+        ? asyncMap(getAuthorizerIdByApiId(apiGatewayV2)) (apiIds)
+        : null)
+
+    const usedFunctions = unique(values(selectedRoutes))
+    const integrationIds = await asyncMap(apiId =>
+        findIntegrationIdsByNames(apiGatewayV2, apiId, usedFunctions)
+    )(apiIds)
+
+    await createApiRoutes(apiGatewayV2, stageNames, apiIds, authorizerIds, integrationIds, selectedRoutes)
+
+    await grantInvokePermissionToRoutes(lambda, computeAccountArn, keys(stages), apiIds, selectedRoutes)
+
 })()

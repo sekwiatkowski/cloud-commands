@@ -1,44 +1,55 @@
-import {concat, entries, map} from 'standard-functions'
+import {concat, map, mapEntries, mapValues, propertyOf, zip} from 'standard-functions'
 import {executeCommand} from '../../execution'
 import {performSequentially} from '../../perform-sequentially'
 
-function computeCreateRouteOptions(apiId) {
-    return routeKey => integrationId => maybeAuthorizerId => {
-        const baseOptions = [
-            ['api-id', apiId],
-            ['route-key', `"${routeKey}"`],
-            ['target', `integrations/${integrationId}`]
+function computeCreateRouteOptions(apiId, maybeAuthorizerId, routeKey, integrationId) {
+    const baseOptions = [
+        ['api-id', apiId],
+        ['route-key', `"${routeKey}"`],
+        ['target', `integrations/${integrationId}`]
+    ]
+
+    const authorizerOptions = maybeAuthorizerId
+        ? [
+            ['authorization-type', 'JWT'],
+            ['authorizer-id', maybeAuthorizerId]
         ]
+        : []
 
-        const authorizerOptions = maybeAuthorizerId
-            ? [
-                ['authorization-type', 'JWT'],
-                ['authorizer-id', maybeAuthorizerId]
-            ]
-            : []
-
-        return concat(baseOptions, authorizerOptions)
-    }
+    return concat(baseOptions, authorizerOptions)
 }
 
-export function createApiRoute(apiGatewayV2, apiId) {
+function createApiRoute(apiGatewayV2, apiId, authorizerId) {
     return (routeKey, integrationId) => {
         console.log(`Creating route "${routeKey}" ...`)
 
-        const options = computeCreateRouteOptions(apiId)(routeKey)(integrationId)(null)
+        const options = computeCreateRouteOptions(apiId, authorizerId, routeKey, integrationId)
 
         const command = apiGatewayV2('create-route')(options)
 
         console.log(command)
 
-        return executeCommand(command)
+        return executeCommand(command).then(JSON.parse)
     }
 }
 
-export async function createApiRoutes(apiGatewayV2, id, routeKeysAndIntegrationIds) {
-    const actions = map(([routeKey, integrationId]) =>
-        () => createApiRoute(apiGatewayV2, id) (routeKey, integrationId)
-    ) (entries(routeKeysAndIntegrationIds))
+export default async function createApiRoutes(apiGatewayV2, stageNames, apiIds, authorizerIds, integrations, routes) {
+    console.log(`Creating routes ...`)
+
+    const actions = map(([stageName, apiId, authorizerId, stageIntegration]) => async() => {
+        console.log(`Processing the "${stageName}" stage ...`)
+
+        const createRoute = createApiRoute(apiGatewayV2, apiId, authorizerId)
+
+        const routeKeysAndIntegrationIds = mapValues(propertyOf(stageIntegration))(routes)
+
+        const createRouteActions = mapEntries(([routeKey, integrationId]) => () =>
+            createRoute(routeKey, integrationId)
+        ) (routeKeysAndIntegrationIds)
+
+        return performSequentially(createRouteActions)
+
+    }) (zip(stageNames, apiIds, authorizerIds, integrations))
 
     return performSequentially(actions)
 }

@@ -1,14 +1,16 @@
 #!/usr/bin/env node --experimental-modules --es-module-specifier-resolution=node
 
-import {fromEntries, map, mapValues, property, propertyOf, unique, values, zip} from 'standard-functions'
 import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {createApi} from '../../actions/apis/create-api'
-import {createApiStages} from '../../actions/apis/create-api-stage'
-import {createApiRoutes} from '../../actions/apis/create-api-route'
-import {integrateFunctions} from '../../actions/apis/integrate-function'
 import {computeArn} from '../../arns'
+import {entries, filter, map, property, unique, unzip, values, zip, zipObject} from 'standard-functions'
+import integrateFunctions from '../../actions/apis/integrate-function'
+import createApiRoutes from '../../actions/apis/create-api-route'
+import {createApiStages} from '../../actions/apis/create-api-stage'
 import grantInvokePermissionToRoutes from '../../actions/apis/grant-invoke-permission-to-routes'
+import createApiAuthorizers from '../../actions/apis/create-api-authorizer'
+import {foldOption, maybeUndefined} from 'data-structures'
 
 (async () => {
     const { profile, accountId, region, api } = await parseConfigurationFile('aws.json')
@@ -18,33 +20,45 @@ import grantInvokePermissionToRoutes from '../../actions/apis/grant-invoke-permi
         process.exit(1)
     }
 
-    const { stages, routes } = api
+    const stageEntries = entries(api.stages)
+
+    const [stageKeys, stages] = unzip(stageEntries)
+    const stageNames = map(property('name')) (stages)
 
     const awsCli = createAwsCli(profile, region)
 
     const apiGatewayV2 = awsCli('apigatewayv2')
     const lambda = awsCli('lambda')
+    const cognitoIdp = awsCli('cognito-idp')
 
     const computeAccountArn = computeArn(region)(accountId)
 
     // Create API
-    const createdApi = await createApi(apiGatewayV2, api)
+    const createdApis = await createApi(apiGatewayV2, api)
+    const apiIds = map(property('ApiId')) (createdApis)
 
-    const apiId = createdApi.ApiId
+    // Create authorizers
+    const maybeAuthorization = maybeUndefined(api.authorization)
+    const authorizerIds = await foldOption
+        (authorization =>
+            createApiAuthorizers(cognitoIdp, apiGatewayV2, region, authorization, stageNames, stageKeys, apiIds)
+                .then(map(property('AuthorizerId'))))
+        (null)
+        (maybeAuthorization)
 
-    const usedFunctions = unique(values(routes))
     // Integrate functions
-    const integratedFunctions = await integrateFunctions(apiGatewayV2, computeAccountArn, apiId, usedFunctions)
-    const integrationIds = map(property('IntegrationId'))(integratedFunctions)
-    const functionsAndIntegrationIds = fromEntries(zip(usedFunctions)(integrationIds))
-    const routeKeysAndIntegrationIds = mapValues(propertyOf(functionsAndIntegrationIds))(routes)
-
-    // Create stages
-    await createApiStages(apiGatewayV2, apiId, stages)
+    const functionNames = unique(values(api.routes))
+    const integratedFunctions = await integrateFunctions(apiGatewayV2, computeAccountArn, stageNames, apiIds, functionNames)
+    const integrationIds = map(map(property('IntegrationId')))(integratedFunctions)
+    const integrations = map(zipObject(functionNames))(integrationIds)
 
     // Create routes
-    await createApiRoutes(apiGatewayV2, apiId, routeKeysAndIntegrationIds)
+    await createApiRoutes(apiGatewayV2, stageNames, apiIds, authorizerIds, integrations, api.routes)
+
+    // Create stages
+    await createApiStages(apiGatewayV2, stageKeys, stages, apiIds)
 
     // Grant invoke permissions to routes
-    await grantInvokePermissionToRoutes(lambda, computeAccountArn, apiId, stages, routes)
+    await grantInvokePermissionToRoutes(lambda, computeAccountArn, stageKeys, apiIds, api.routes)
+
 })()

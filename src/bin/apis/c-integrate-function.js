@@ -3,9 +3,11 @@
 import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {parseApiFunctionNames} from '../../cli-arguments'
-import {integrateFunctions} from '../../actions/apis/integrate-function'
 import {findApiIdByName} from '../../additional-information/api-id'
 import {computeArn} from '../../arns'
+import {asyncMap, map, property, values} from 'standard-functions'
+import combineApiAndStageName from '../../api-name'
+import integrateFunctions from '../../actions/apis/integrate-function'
 
 (async () => {
     const { api, profile, region, accountId } = await parseConfigurationFile('aws.json')
@@ -15,16 +17,20 @@ import {computeArn} from '../../arns'
         process.exit(1)
     }
 
-    const { name, routes } = api
-
-    const functionNames = parseApiFunctionNames(routes)
+    const functionNames = parseApiFunctionNames(api.routes)
 
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
     const computeAccountArn = computeArn(region) (accountId)
 
-    const id = await findApiIdByName(apiGatewayV2, name)
+    const stageNames = map(property('name')) (values(api.stages))
 
-    await integrateFunctions(apiGatewayV2, computeAccountArn, id, functionNames)
+    const combinedNames = map(combineApiAndStageName(api.name)) (stageNames)
+
+    const apiIds = await asyncMap(combinedName =>
+        findApiIdByName(apiGatewayV2, combinedName)
+    )(combinedNames)
+
+    await integrateFunctions(apiGatewayV2, computeAccountArn, stageNames, apiIds, functionNames)
 })()

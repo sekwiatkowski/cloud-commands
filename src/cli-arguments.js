@@ -12,7 +12,7 @@ import {
     keys,
     length,
     map,
-    pick,
+    pick, unique,
     values
 } from 'standard-functions'
 
@@ -77,7 +77,7 @@ export function parseApiFunctionNames(routes) {
 
     exitIfEmpty('Please specify at least one function used by the API.') (selectedFunctionNames)
 
-    const usedFunctionNames = values(routes)
+    const usedFunctionNames = unique(values(routes))
 
     if (containsWildcardOnly(selectedFunctionNames)) {
         return usedFunctionNames

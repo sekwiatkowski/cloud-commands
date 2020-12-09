@@ -1,4 +1,4 @@
-import {entries, map} from 'standard-functions'
+import {entries, map, zip} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import {executeCommand} from '../../execution'
 
@@ -11,7 +11,7 @@ function computeDeleteApiRouteOptions(apiId, routeId) {
 
 function deleteApiRoute(apiGatewayV2, apiId) {
     return (serializedRouteKey, routeId) => {
-        console.log(`Deleting API route ${serializedRouteKey} ...`)
+        console.log(`Deleting "${serializedRouteKey}" route ...`)
 
         const options = computeDeleteApiRouteOptions(apiId, routeId)
 
@@ -23,10 +23,21 @@ function deleteApiRoute(apiGatewayV2, apiId) {
     }
 }
 
-export function deleteApiRoutes(apiGatewayV2, apiId, serializedRouteKeysAndIds) {
-    const deleteRoute = deleteApiRoute(apiGatewayV2, apiId)
+export function deleteApiRoutes(apiGatewayV2, stageNames, apiIds, routeKeysAndIds) {
+    console.log('Deleting routes ...')
 
-    const actions = map(([routeKey, routeId]) => () => deleteRoute(routeKey, routeId)) (entries(serializedRouteKeysAndIds))
+    const actions = map(([ stageName, apiId, stageRouteKeysAndIds]) => () => {
+        console.log(`Processing "${stageName}" stage ...`)
+
+        const deleteRoute = deleteApiRoute(apiGatewayV2, apiId)
+
+        const stageActions = map(([routeKey, routeId]) =>
+            () => deleteRoute(routeKey, routeId)) (entries(stageRouteKeysAndIds)
+        )
+
+        return performSequentially(stageActions)
+
+    }) (zip(stageNames, apiIds, routeKeysAndIds))
 
     return performSequentially(actions)
 }

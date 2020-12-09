@@ -4,7 +4,7 @@ export async function performSequentially(actions) {
     return fold(
             (accP, action) => Promise
                 .all([accP, action()])
-                .then(([acc, result]) => acc.concat(result))
+                .then(([acc, result]) => [...acc, result])
         )
         (Promise.resolve([]))
         (actions)

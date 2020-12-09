@@ -2,8 +2,8 @@
 
 import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
-import {findApiIdByName} from '../../additional-information/api-id'
-import {deleteApi} from '../../actions/apis/delete-api'
+import {map, property, values} from 'standard-functions'
+import deleteApi from '../../actions/apis/delete-api'
 
 (async () => {
     const { api, profile, region } = await parseConfigurationFile('aws.json')
@@ -16,9 +16,8 @@ import {deleteApi} from '../../actions/apis/delete-api'
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
-    const { name } = api
+    const apiName = api.name
+    const stageNames = map(property('name')) (values(api.stages))
 
-    const id = await findApiIdByName(apiGatewayV2, name)
-
-    await deleteApi(apiGatewayV2, name, id)
+    await deleteApi(apiGatewayV2, apiName, stageNames)
 })()

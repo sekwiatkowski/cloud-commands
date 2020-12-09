@@ -4,7 +4,9 @@ import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {parseApiStages} from '../../cli-arguments'
 import {findApiIdByName} from '../../additional-information/api-id'
-import updateVariablesInStages from '../../actions/apis/update-variables'
+import updateStageVariables from '../../actions/apis/update-stage-variables'
+import {asyncMap, entries, map, property, unzip} from 'standard-functions'
+import combineApiAndStageName from '../../api-name'
 
 (async () => {
     const { api, profile, region } = await parseConfigurationFile('aws.json')
@@ -18,10 +20,19 @@ import updateVariablesInStages from '../../actions/apis/update-variables'
 
     const selectedStages = parseApiStages(stages)
 
+    const [stageKeys, configurations] = unzip(entries(selectedStages))
+
+    const stageNames = map(property('name')) (configurations)
+    const variables = map(property('variables')) (configurations)
+
+    const combinedNames = map(combineApiAndStageName(name)) (stageNames)
+
     const awsCli = createAwsCli(profile, region)
     const apiGatewayV2 = awsCli('apigatewayv2')
 
-    const apiId = await findApiIdByName(apiGatewayV2, name)
+    const apiIds = await asyncMap(combinedName =>
+        findApiIdByName(apiGatewayV2, combinedName)
+    )(combinedNames)
 
-    await updateVariablesInStages(apiGatewayV2, apiId, selectedStages)
+    await updateStageVariables(apiGatewayV2, stageKeys, stageNames, apiIds, variables)
 })()

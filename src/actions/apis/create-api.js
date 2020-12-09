@@ -1,14 +1,19 @@
 import {
     concat,
     first,
-    joinWithComma, joinWithEqualitySign,
+    joinWithComma,
+    joinWithEqualitySign,
     keys,
     map,
+    mapEntries,
+    mergeRecursively,
     splitBySpace,
     surroundWithDoubleQuotes,
     unique
 } from 'standard-functions'
 import {executeCommand} from '../../execution'
+import {performSequentially} from '../../perform-sequentially'
+import combineApiAndStageName from '../../api-name'
 
 function computeBaseOptions(name, description) {
     return [
@@ -56,14 +61,22 @@ function computeCreateApiOptions(name, description, cors, routes) {
     return options
 }
 
-export function createApi(apiGatewayV2, {name, description, cors, routes}) {
-    console.log(`Creating API ${name} ...`)
+export function createApi(apiGatewayV2, {name, description, cors, routes, stages}) {
+    console.log(`Creating "${name}" APIs ...`)
 
-    const options = computeCreateApiOptions(name, description, cors, routes)
+    const actions = mapEntries(([_, stage]) => () => {
+        console.log(`Creating the ${stage.name} API ...`)
 
-    const command = apiGatewayV2('create-api') (options)
+        const combineCors = stage.cors ? mergeRecursively(cors, stage.cors) : cors
 
-    console.log(command)
+        const combinedName = combineApiAndStageName(name) (stage.name)
+        const createOptions = computeCreateApiOptions(combinedName, description, combineCors, routes)
 
-    return executeCommand(command).then(JSON.parse)
+        const command = apiGatewayV2('create-api') (createOptions)
+        console.log(command)
+
+        return executeCommand(command).then(JSON.parse)
+    }) (stages)
+
+    return performSequentially(actions)
 }

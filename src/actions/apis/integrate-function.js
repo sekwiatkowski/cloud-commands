@@ -1,5 +1,5 @@
 import {executeCommand} from '../../execution'
-import {map} from 'standard-functions'
+import {flatMap, map, zip} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import {computeLambdaFunctionArn} from '../../arns'
 
@@ -15,7 +15,7 @@ function computeIntegrateFunctionParameters(apiId) {
     ]
 }
 
-export function integrateFunction(apiGatewayV2, computeArn) {
+function integrateFunction(apiGatewayV2, computeArn) {
     return apiId => functionName => {
         console.log(`Integrating function "${functionName}" ...`)
 
@@ -31,10 +31,21 @@ export function integrateFunction(apiGatewayV2, computeArn) {
     }
 }
 
-export function integrateFunctions(apiGatewayV2, computeAccountArn, id, functionNames) {
-    const integrateWithApi = integrateFunction(apiGatewayV2, computeAccountArn)(id)
+export default async function integrateFunctions(apiGatewayV2, computeAccountArn, stageNames, apiIds, functionNames) {
+    console.log('Integrating functions ....')
 
-    const actions = map(name => () => integrateWithApi(name))(functionNames)
+    const integrateWithAccount = integrateFunction(apiGatewayV2, computeAccountArn)
+
+    const actions = map(([ stageName, apiId ]) => () => {
+        console.log(`Processing stage "${stageName}" ...`)
+
+        const integrateWithApi = integrateWithAccount(apiId)
+
+        const stageActions = map(functionName => () => integrateWithApi(functionName)) (functionNames)
+
+        return performSequentially(stageActions)
+
+    }) (zip(stageNames, apiIds))
 
     return performSequentially(actions)
 }
