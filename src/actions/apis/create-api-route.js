@@ -1,4 +1,4 @@
-import {concat, map, mapEntries, mapValues, propertyOf, zip} from 'standard-functions'
+import {concat, fill, length, map, mapEntries, mapValues, propertyOf, zip} from 'standard-functions'
 import {executeCommand} from '../../execution'
 import {performSequentially} from '../../perform-sequentially'
 
@@ -49,7 +49,7 @@ export default async function createApiRoutes(apiGatewayV2, stageNames, apiIds, 
 
         return performSequentially(createRouteActions)
 
-    }) (zip(stageNames, apiIds, authorizerIds, integrations))
+    }) (zip(stageNames, apiIds, authorizerIds ?? fill(null) (length(stageNames)), integrations))
 
     return performSequentially(actions)
 }

@@ -67,7 +67,7 @@ export function createApi(apiGatewayV2, {name, description, cors, routes, stages
     const actions = mapEntries(([_, stage]) => () => {
         console.log(`Creating the ${stage.name} API ...`)
 
-        const combineCors = stage.cors ? mergeRecursively(cors, stage.cors) : cors
+        const combineCors = mergeRecursively(cors ?? {}, stage.cors ?? {})
 
         const combinedName = combineApiAndStageName(name) (stage.name)
         const createOptions = computeCreateApiOptions(combinedName, description, combineCors, routes)
