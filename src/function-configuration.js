@@ -1,20 +1,28 @@
-import {concat, joinWithComma, joinWithEqualitySign, toString} from 'standard-functions'
+import {concat, isEmpty, joinWithComma, joinWithEqualitySign, toString} from 'standard-functions'
 
-function computeFragment(key) {
+function computeVpcFragment(key) {
     return arr => {
-        const list = joinWithComma(arr)
-        return joinWithEqualitySign([key, list])
+        const list = isEmpty(arr)
+            ? '[]'
+            : joinWithComma(arr)
+
+        return joinWithEqualitySign(key, list)
     }
 }
 
-const computeSubnetFragment = computeFragment('SubnetIds')
-const computeSecurityGroupFragment = computeFragment('SecurityGroupIds')
+const computeSubnetFragment = computeVpcFragment('SubnetIds')
+const computeSecurityGroupFragment = computeVpcFragment('SecurityGroupIds')
 
-function computeVpcSetting({subnetIds, securityGroupIds}) {
-    return joinWithComma([
+function computeVpcSetting(configuration) {
+    const { subnetIds, securityGroupIds } = configuration ?? {
+        subnetIds: [],
+        securityGroupIds: []
+    }
+
+    return joinWithComma(
         computeSubnetFragment(subnetIds),
         computeSecurityGroupFragment(securityGroupIds)
-    ])
+    )
 }
 
 export function computeTagsSetting(apiName) {
@@ -38,9 +46,7 @@ export function createUpdateFunctionConfiguration(name, role, runtime, timeout, 
         ? [['timeout', toString(timeout)]]
         : []
 
-    const vpcOptions = vpc
-        ? [['vpc-config', computeVpcSetting(vpc)]]
-        : []
+    const vpcOptions = [['vpc-config', computeVpcSetting(vpc)]]
 
     const options = concat(baseOptions, timeoutOptions, vpcOptions)
 
