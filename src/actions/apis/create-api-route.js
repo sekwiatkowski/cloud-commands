@@ -1,4 +1,4 @@
-import {concat, fill, length, map, mapEntries, mapValues, propertyOf, zip} from 'standard-functions'
+import {concat, fill, isFalse, isString, length, map, mapEntries, zip} from 'standard-functions'
 import {executeCommand} from '../../execution'
 import {performSequentially} from '../../perform-sequentially'
 
@@ -20,10 +20,14 @@ function computeCreateRouteOptions(apiId, maybeAuthorizerId, routeKey, integrati
 }
 
 function createApiRoute(apiGatewayV2, apiId, authorizerId) {
-    return (routeKey, integrationId) => {
+    return (routeKey, integrationId, authorize) => {
         console.log(`Creating route "${routeKey}" ...`)
 
-        const options = computeCreateRouteOptions(apiId, authorizerId, routeKey, integrationId)
+        const options = computeCreateRouteOptions(
+            apiId,
+            isFalse(authorize) ? null : authorizerId,
+            routeKey,
+            integrationId)
 
         const command = apiGatewayV2('create-route')(options)
 
@@ -41,11 +45,16 @@ export default async function createApiRoutes(apiGatewayV2, stageNames, apiIds, 
 
         const createRoute = createApiRoute(apiGatewayV2, apiId, authorizerId)
 
-        const routeKeysAndIntegrationIds = mapValues(propertyOf(stageIntegration))(routes)
+        const createRouteActions = mapEntries(([routeKey, routeValue]) => () => {
 
-        const createRouteActions = mapEntries(([routeKey, integrationId]) => () =>
-            createRoute(routeKey, integrationId)
-        ) (routeKeysAndIntegrationIds)
+            const routeConfiguration = isString(routeValue)
+                ? ({function: routeValue, authorize: true})
+                : routeValue
+
+            const integrationId = stageIntegration[routeConfiguration.function]
+
+            createRoute(routeKey, integrationId, routeConfiguration.authorize)
+        }) (routes)
 
         return performSequentially(createRouteActions)
 
