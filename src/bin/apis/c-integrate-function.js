@@ -5,7 +5,7 @@ import {createAwsCli} from '../../aws-cli'
 import {parseApiFunctionNames} from '../../cli-arguments'
 import {findApiIdByName} from '../../additional-information/api-id'
 import {computeArn} from '../../arns'
-import {asyncMap, map, property, values} from 'standard-functions'
+import {parallelMap, map, property, values} from 'standard-functions'
 import combineApiAndStageName from '../../api-name'
 import integrateFunctions from '../../actions/apis/integrate-function'
 
@@ -28,7 +28,7 @@ import integrateFunctions from '../../actions/apis/integrate-function'
 
     const combinedNames = map(combineApiAndStageName(api.name)) (stageNames)
 
-    const apiIds = await asyncMap(combinedName =>
+    const apiIds = await parallelMap(combinedName =>
         findApiIdByName(apiGatewayV2, combinedName)
     )(combinedNames)
 

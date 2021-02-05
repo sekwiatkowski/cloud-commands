@@ -1,5 +1,5 @@
 import {executeCommand} from '../../execution'
-import {asyncMap, joinWithComma, joinWithDash, map, zip} from 'standard-functions'
+import {joinWithComma, joinWithDash, map, parallelMap, zip} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import {findUserPoolIdByName} from '../../additional-information/user-pool-id'
 import {findUserPoolClientIdByName} from '../../additional-information/user-pool-client-id'
@@ -30,7 +30,7 @@ async function createApiAuthorizer(cognitoIdp, apiGatewayV2, region, authorizati
     const poolId = await findUserPoolIdByName(cognitoIdp, poolName)
 
     const clientNames = map(name => joinWithDash(/*stageKey, */name))(authorization.clients)
-    const clientIds = await asyncMap(name => findUserPoolClientIdByName(cognitoIdp, poolId, name)) (clientNames)
+    const clientIds = await parallelMap(name => findUserPoolClientIdByName(cognitoIdp, poolId, name)) (clientNames)
 
     const authorizerName = joinWithDash(stageKey, authorization.authorizer)
 

@@ -3,7 +3,7 @@
 import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {parseApiRoutes} from '../../cli-arguments'
-import {asyncMap, keys, map, property, unique, values} from 'standard-functions'
+import {parallelMap, keys, map, property, unique, values} from 'standard-functions'
 import createApiRoutes from '../../actions/apis/create-api-route'
 import combineApiAndStageName from '../../api-name'
 import {findApiIdByName} from '../../additional-information/api-id'
@@ -34,16 +34,16 @@ import {getAuthorizerIdByApiId} from '../../additional-information/authorizer-id
     const stageNames = map(property('name')) (values(stages))
     const combinedNames = map(combineApiAndStageName(name)) (stageNames)
 
-    const apiIds = await asyncMap(combinedName =>
+    const apiIds = await parallelMap(combinedName =>
         findApiIdByName(apiGatewayV2, combinedName)
     )(combinedNames)
 
     const authorizerIds = await (authorization
-        ? asyncMap(getAuthorizerIdByApiId(apiGatewayV2)) (apiIds)
+        ? parallelMap(getAuthorizerIdByApiId(apiGatewayV2)) (apiIds)
         : null)
 
     const usedFunctions = unique(values(selectedRoutes))
-    const integrationIds = await asyncMap(apiId =>
+    const integrationIds = await parallelMap(apiId =>
         findIntegrationIdsByNames(apiGatewayV2, apiId, usedFunctions)
     )(apiIds)
 

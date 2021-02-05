@@ -4,9 +4,9 @@ import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {parseApiStages} from '../../cli-arguments'
 import {findApiIdByName} from '../../additional-information/api-id'
-import updateStageVariables from '../../actions/apis/update-stage-variables'
-import {parallelMap, entries, map, property, unzip} from 'standard-functions'
+import {entries, map, parallelMap, property, unzip} from 'standard-functions'
 import combineApiAndStageName from '../../api-name'
+import updateCorsConfiguration from '../../actions/apis/update-cors-configuration'
 
 (async () => {
     const { api, profile, region } = await parseConfigurationFile('aws.json')
@@ -16,14 +16,14 @@ import combineApiAndStageName from '../../api-name'
         process.exit(1)
     }
 
-    const { name, stages } = api
+    const { name, stages, cors, routes } = api
 
     const selectedStages = parseApiStages(stages)
 
-    const [stageKeys, configurations] = unzip(entries(selectedStages))
+    const [stageKeys, stageConfigurations] = unzip(entries(selectedStages))
 
-    const stageNames = map(property('name')) (configurations)
-    const variables = map(property('variables')) (configurations)
+    const stageNames = map(property('name')) (stageConfigurations)
+    const stageCors = map(property('cors')) (stageConfigurations)
 
     const combinedNames = map(combineApiAndStageName(name)) (stageNames)
 
@@ -34,5 +34,5 @@ import combineApiAndStageName from '../../api-name'
         findApiIdByName(apiGatewayV2, combinedName)
     )(combinedNames)
 
-    await updateStageVariables(apiGatewayV2, stageKeys, stageNames, apiIds, variables)
+    await updateCorsConfiguration(apiGatewayV2, stageKeys, stageNames, apiIds, cors, stageCors, routes)
 })()

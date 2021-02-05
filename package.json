@@ -1,6 +1,6 @@
 {
     "name": "cloud-commands",
-    "version": "0.6.3",
+    "version": "0.6.4",
     "bin": {
         "c-create-function": "src/bin/functions/c-create-function.js",
         "c-delete-distribution": "src/bin/functions/c-delete-distribution.js",
@@ -15,14 +15,15 @@
         "c-set-up-api-route": "src/bin/apis/c-set-up-api-route.js",
         "c-delete-api-route": "src/bin/apis/c-delete-api-route.js",
         "c-update-variables": "src/bin/apis/c-update-variables.js",
+        "c-update-cors": "src/bin/apis/c-update-cors.js",
         "c-create-user-pool": "src/bin/user-pools/c-create-user-pool.js",
         "c-delete-user-pool": "src/bin/user-pools/c-delete-user-pool.js",
         "c-create-user-pool-client": "src/bin/user-pools/c-create-user-pool-client.js"
     },
     "dependencies": {
-        "data-structures": "github:sekwiatkowski/data-structures#v0.1.2",
+        "data-structures": "github:sekwiatkowski/data-structures#v0.2.1",
         "fs-extra": "9.0.1",
-        "standard-functions": "github:sekwiatkowski/standard-functions#v0.23.2"
+        "standard-functions": "github:sekwiatkowski/standard-functions#v0.26.3"
     },
     "type": "module"
 }

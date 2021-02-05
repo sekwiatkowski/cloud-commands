@@ -6,18 +6,15 @@ import {exitIfEmpty, exitIfUnknown, extractBigrams, extractCliArguments} from '.
 import {findApiIdByName} from '../../additional-information/api-id'
 import {getAllRouteKeys} from '../../additional-information/all-api-route-keys'
 import {
-    asyncMap,
+    parallelMap,
     difference,
-    filter,
-    first,
-    isLongerThan,
-    isNotEmpty,
-    isOfLengthOne,
-    isPropertyOf,
     joinWithCommaSpace,
-    joinWithSpace, keys,
+    joinWithSpace,
+    keys,
     map,
-    pick, property, values
+    pick,
+    property,
+    values
 } from 'standard-functions'
 import {deleteApiRoutes} from '../../actions/apis/delete-api-route'
 import combineApiAndStageName from '../../api-name'
@@ -44,12 +41,12 @@ import combineApiAndStageName from '../../api-name'
     const stageNames = map(property('name')) (values(stages))
     const combinedNames = map(combineApiAndStageName(name)) (stageNames)
 
-    const apiIds = await asyncMap(combinedName =>
+    const apiIds = await parallelMap(combinedName =>
         findApiIdByName(apiGatewayV2, combinedName)
     )(combinedNames)
 
     console.log('Retrieving existing routes ...')
-    const routeKeysAndIds = await asyncMap(async(apiId) => {
+    const routeKeysAndIds = await parallelMap(async(apiId) => {
         const routeKeyMapping = await getAllRouteKeys(apiGatewayV2, apiId)
         const serializedRouteKeysToBeDeleted = map(joinWithSpace) (routeKeysToBeDeleted)
 
