@@ -18,7 +18,10 @@ function computeGetRoutes(apiId, token) {
 export function getAllRouteKeys(apiGatewayV2, apiId, routeKeys = [], token = undefined) {
     const [subcommand, options] = computeGetRoutes(apiId, token)
 
-    return executeCommand(apiGatewayV2(subcommand) (options))
+    const command = apiGatewayV2(subcommand) (options)
+    console.log(command)
+
+    return executeCommand(command)
         .then(JSON.parse)
         .then(({ Items, NextToken }) => {
             const additionalRouteKeys = fromEntries(map(({RouteKey, RouteId}) => [RouteKey, RouteId])(Items))

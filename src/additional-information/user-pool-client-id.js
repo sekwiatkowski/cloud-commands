@@ -18,6 +18,8 @@ export function findUserPoolClientIdByName(cognitoIdp, poolId, clientName, token
     const options = computeListUserPoolClientss(poolId, token)
     const command = cognitoIdp('list-user-pool-clients') (options)
 
+    console.log(command)
+
     return executeCommand(command)
         .then(JSON.parse)
         .then(res => {

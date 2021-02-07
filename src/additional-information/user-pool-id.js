@@ -17,6 +17,8 @@ export function findUserPoolIdByName(cognitoIdp, userPoolName, token) {
     const options = computeListUserPools(token)
     const command = cognitoIdp('list-user-pools') (options)
 
+    console.log(command)
+
     return executeCommand(command)
         .then(JSON.parse)
         .then(res => {

@@ -4,7 +4,7 @@ import {parseConfigurationFile} from '../../configuration'
 import {createAwsCli} from '../../aws-cli'
 import {createApi} from '../../actions/apis/create-api'
 import {computeArn} from '../../arns'
-import {entries, isString, map, property, unique, unzip, values, zipObject} from 'standard-functions'
+import {entries, map, property, unique, unzip, values, zipObject} from 'standard-functions'
 import integrateFunctions from '../../actions/apis/integrate-function'
 import createApiRoutes from '../../actions/apis/create-api-route'
 import {createApiStages} from '../../actions/apis/create-api-stage'
@@ -47,10 +47,10 @@ import {foldOption, maybeUndefined} from 'data-structures'
         (maybeAuthorization)
 
     // Integrate functions
-    const uniqueFunctionNames = unique(map(routeConfiguration => isString(routeConfiguration) ? routeConfiguration : routeConfiguration.function) (values(api.routes)))
-    const integratedFunctions = await integrateFunctions(apiGatewayV2, computeAccountArn, stageNames, apiIds, uniqueFunctionNames)
+    const functionNames = unique(values(api.routes))
+    const integratedFunctions = await integrateFunctions(apiGatewayV2, computeAccountArn, stageNames, apiIds, functionNames)
     const integrationIds = map(map(property('IntegrationId')))(integratedFunctions)
-    const integrations = map(zipObject(uniqueFunctionNames))(integrationIds)
+    const integrations = map(zipObject(functionNames))(integrationIds)
 
     // Create routes
     await createApiRoutes(apiGatewayV2, stageNames, apiIds, authorizerIds, integrations, api.routes)

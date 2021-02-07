@@ -1,4 +1,4 @@
-import {isString, map, mapEntries, splitBySpace, zip} from 'standard-functions'
+import {map, mapEntries, splitBySpace, zip} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import {computeExecuteApiArn, computeLambdaFunctionArn} from '../../arns'
 import grantInvokePermission from '../../invoke-permissions'
@@ -27,8 +27,8 @@ export default async function grantInvokePermissionToRoutes(lambda, computeAccou
         const grantToStage = grantToAccount(apiId) (stageKey)
 
         const stageActions = mapEntries
-            (([routeKey, routeConfiguration]) => () =>
-                grantToStage(splitBySpace(routeKey), isString(routeConfiguration) ? routeConfiguration : routeConfiguration.function)
+            (([routeKey, functionName]) => () =>
+                grantToStage(splitBySpace(routeKey), functionName)
             )
             (routes)
 

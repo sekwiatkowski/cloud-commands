@@ -15,7 +15,10 @@ function computeListFunctions(token) {
 export function getAllFunctionNames(lambda, collection = [], token = undefined) {
     const [subcommand, options] = computeListFunctions(token)
 
-    return executeCommand(lambda(subcommand)(options))
+    const command = lambda(subcommand)(options)
+    console.log(command)
+
+    return executeCommand(command)
         .then(JSON.parse)
         .then(({ Functions, NextToken }) => {
             const additionalFunctionNames = map(property('FunctionName'))(Functions)
