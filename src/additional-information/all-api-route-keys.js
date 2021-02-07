@@ -19,7 +19,6 @@ export function getAllRouteKeys(apiGatewayV2, apiId, routeKeys = [], token = und
     const [subcommand, options] = computeGetRoutes(apiId, token)
 
     const command = apiGatewayV2(subcommand) (options)
-    console.log(command)
 
     return executeCommand(command)
         .then(JSON.parse)

@@ -23,8 +23,6 @@ export function findIntegrationIdsByNames(apiGatewayV2, apiId, functionNames, to
 
     const command = apiGatewayV2(subcommand)(options)
 
-    console.log(command)
-
     return executeCommand(command)
         .then(JSON.parse)
         .then(({Items, NextToken}) => {

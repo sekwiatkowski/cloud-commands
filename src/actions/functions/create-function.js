@@ -25,8 +25,6 @@ export function createFunction(lambda) {
 
             const command = lambda('create-function') (options)
 
-            console.log(command)
-
             const cwd = `dist\\${name}`
 
             return executeInDirectory(command, cwd)

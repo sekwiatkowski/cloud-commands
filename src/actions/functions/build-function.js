@@ -40,8 +40,6 @@ export default function buildFunction(esbuildConfiguration) {
 
         const directory = process.cwd()
 
-        console.log(`[${directory}] ${command}`)
-
         return executeInDirectory(command, directory)
     }
 }

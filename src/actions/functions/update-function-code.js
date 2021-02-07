@@ -9,8 +9,6 @@ export function updateFunctionCode(lambda) {
 
         const command = lambda('update-function-code') (options)
 
-        console.log(command)
-
         const cwd = `dist\\${name}`
 
         return executeInDirectory(command, cwd)

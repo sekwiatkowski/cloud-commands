@@ -13,9 +13,13 @@ function handleOutput({stdout, stderr}) {
 }
 
 export function executeCommand(command) {
+    console.log(command)
+
     return exec(command).then(handleOutput)
 }
 
 export function executeInDirectory(command, cwd) {
+    console.log(`[${directory}] ${command}`)
+
     return exec(command, { cwd }).then(handleOutput)
 }

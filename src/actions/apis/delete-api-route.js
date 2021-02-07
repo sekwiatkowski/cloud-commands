@@ -17,8 +17,6 @@ function deleteApiRoute(apiGatewayV2, apiId) {
 
         const command = apiGatewayV2('delete-route') (options)
 
-        console.log(command)
-
         return executeCommand(command)
     }
 }

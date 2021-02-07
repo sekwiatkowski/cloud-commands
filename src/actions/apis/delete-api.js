@@ -20,7 +20,6 @@ async function deleteStageApi(apiGatewayV2, apiName, stageName) {
     const options = computeDeleteApiOptions(apiId)
 
     const command = apiGatewayV2('delete-api') (options)
-    console.log(command)
 
     return executeCommand(command)
 }

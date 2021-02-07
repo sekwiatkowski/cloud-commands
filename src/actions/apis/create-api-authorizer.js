@@ -37,7 +37,6 @@ async function createApiAuthorizer(cognitoIdp, apiGatewayV2, region, authorizati
     const options = computeCreateAuthorizerOptions(region, authorizerName, apiId, poolId, clientIds)
 
     const command = apiGatewayV2('create-authorizer') (options)
-    console.log(command)
 
     return executeCommand(command).then(JSON.parse)
 }

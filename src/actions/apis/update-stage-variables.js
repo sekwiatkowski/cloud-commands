@@ -15,8 +15,6 @@ function updateVariablesInStage(apiGatewayV2, stageKey, stageName, apiId, stageV
 
     const command = apiGatewayV2('update-stage')(options)
 
-    console.log(command)
-
     return executeCommand(command).then(JSON.parse)
 }
 

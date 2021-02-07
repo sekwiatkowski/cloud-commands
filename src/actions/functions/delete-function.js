@@ -12,8 +12,6 @@ function deleteFunction(lambda) {
 
         const command = lambda('delete-function')(options)
 
-        console.log(command)
-
         return executeCommand(command)
     }
 }

@@ -6,8 +6,6 @@ export default function zipFunction(name) {
     const command = `tar -a -c -f ${name}.zip index.js`
     const directory = path.join(process.cwd(), 'dist', name)
 
-    console.log(`[${directory}] ${command}`)
-
     return executeInDirectory(command, directory)
 }
 

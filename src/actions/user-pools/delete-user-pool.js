@@ -10,7 +10,5 @@ export default function deleteUserPool(cognitoIdp, name, id) {
 
     const command = cognitoIdp('delete-user-pool') (options)
 
-    console.log(command)
-
     return executeCommand(command)
 }

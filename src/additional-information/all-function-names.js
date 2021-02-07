@@ -16,7 +16,6 @@ export function getAllFunctionNames(lambda, collection = [], token = undefined) 
     const [subcommand, options] = computeListFunctions(token)
 
     const command = lambda(subcommand)(options)
-    console.log(command)
 
     return executeCommand(command)
         .then(JSON.parse)

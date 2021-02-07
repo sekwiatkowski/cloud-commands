@@ -27,8 +27,6 @@ function createApiRoute(apiGatewayV2, apiId, authorizerId) {
 
         const command = apiGatewayV2('create-route')(options)
 
-        console.log(command)
-
         return executeCommand(command).then(JSON.parse)
     }
 }

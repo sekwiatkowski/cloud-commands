@@ -18,7 +18,6 @@ export function findApiIdByName(apiGatewayV2, apiName, token) {
     const [subcommand, options] = token ? computeResumeGetApis(token) : getApis
 
     const command = apiGatewayV2(subcommand) (options)
-    console.log(command)
 
     return executeCommand(command)
         .then(JSON.parse)

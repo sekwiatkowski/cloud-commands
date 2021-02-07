@@ -7,8 +7,6 @@ export function updateFunctionConfiguration(lambda, role, runtime, globalTimeout
 
         const command = lambda('update-function-configuration')(options)
 
-        console.log(command)
-
         return executeCommand(command)
     }
 }

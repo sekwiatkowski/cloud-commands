@@ -32,7 +32,6 @@ export function createApi(apiGatewayV2, {name, description, cors, routes, stages
         const createOptions = computeCreateApiOptions(combinedName, description, mergedCors, routes)
 
         const command = apiGatewayV2('create-api') (createOptions)
-        console.log(command)
 
         return executeCommand(command).then(JSON.parse)
     }) (stages)

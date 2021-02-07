@@ -130,7 +130,5 @@ export default function createUserPool(cognitoIdp, computeAccountArn, { name, pa
 
     const command = cognitoIdp('create-user-pool') (parameters)
 
-    console.log(command)
-
     return executeCommand(command).then(JSON.parse)
 }

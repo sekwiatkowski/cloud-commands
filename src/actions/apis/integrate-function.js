@@ -1,5 +1,5 @@
 import {executeCommand} from '../../execution'
-import {flatMap, map, zip} from 'standard-functions'
+import {map, zip} from 'standard-functions'
 import {performSequentially} from '../../perform-sequentially'
 import {computeLambdaFunctionArn} from '../../arns'
 
@@ -24,8 +24,6 @@ function integrateFunction(apiGatewayV2, computeArn) {
         const [subcommand, options] = computeIntegrateFunctionParameters(apiId)(functionArn)
 
         const command = apiGatewayV2(subcommand) (options)
-
-        console.log(command)
 
         return executeCommand(command).then(JSON.parse)
     }

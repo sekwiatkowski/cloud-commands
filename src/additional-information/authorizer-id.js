@@ -13,8 +13,6 @@ export function getAuthorizerIdByApiId(apiGatewayV2) {
 
         const command = apiGatewayV2('get-authorizers')(options)
 
-        console.log(command)
-
         return executeCommand(command)
             .then(JSON.parse)
             .then(({Items}) => single(Items).AuthorizerId)

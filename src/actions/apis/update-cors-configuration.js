@@ -14,8 +14,6 @@ function updateCorsConfigurationInStage(apiGatewayV2, stageKey, stageName, apiId
 
     const command = apiGatewayV2('update-api') (options)
 
-    console.log(command)
-
     return executeCommand(command).then(JSON.parse)
 }
 

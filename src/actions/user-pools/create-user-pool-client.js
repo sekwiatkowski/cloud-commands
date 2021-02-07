@@ -61,7 +61,5 @@ export default async function createUserPoolClient(cognitoIdp, userPoolName, cli
 
     const command = cognitoIdp('create-user-pool-client') (configuration)
 
-    console.log(command)
-
     return executeCommand(command).then(JSON.parse)
 }

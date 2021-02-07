@@ -21,8 +21,6 @@ export function createApiStage(apiGatewayV2, apiId) {
 
         const command = apiGatewayV2('create-stage')(options)
 
-        console.log(command)
-
         return executeCommand(command).then(JSON.parse)
     }
 }
