@@ -19,7 +19,7 @@ export function executeCommand(command) {
 }
 
 export function executeInDirectory(command, cwd) {
-    console.log(`[${directory}] ${command}`)
+    console.log(`[${cwd}] ${command}`)
 
     return exec(command, { cwd }).then(handleOutput)
 }
