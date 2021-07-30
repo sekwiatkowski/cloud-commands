@@ -3,8 +3,9 @@ import child_process from "child_process"
 
 const exec = promisify(child_process.exec)
 
-function handleOutput({stdout, stderr}) {
-    if (stderr) {
+function handleOutput(output) {
+    const { err, stderr, stdout } = output
+    if (err) {
         throw stderr
     }
     else {

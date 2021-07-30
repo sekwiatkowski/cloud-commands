@@ -23,7 +23,7 @@ export function computeExecuteApiArn(computeAccountArn) {
     return (apiId, stage, verb, path) => computeAccountArn('execute-api') (apiId + '/' + stage + '/' + verb + path)
 }
 
-//  arn:aws:cognito-idp:[region]:[account ID]:userpool/[pool id]
 export function computeUserPoolArn(computeAccountArn) {
+//  arn:aws:cognito-idp:[region]:[account ID]:userpool/[pool id]
     return poolId => computeAccountArn('cognito-idp') ('userpool' + '/' + poolId)
 }
